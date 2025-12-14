@@ -2,10 +2,7 @@ package com.energy_company_v1.service;
 
 import com.energy_company_v1.model.EnergyObject;
 import com.energy_company_v1.repository.EnergyObjectRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,11 +32,24 @@ public class EnergyObjectService {
 
     @Transactional
     public EnergyObject createEnergyObject(EnergyObject energyObject) {
-        // Убедитесь, что объект сохраняется с корректными значениями
+        System.out.println("=== СОЗДАНИЕ ЭНЕРГООБЪЕКТА ===");
+        System.out.println("Название: " + energyObject.getName());
+        System.out.println("Тип: " + energyObject.getType());
+        System.out.println("Местоположение: " + energyObject.getLocation());
+        System.out.println("Мощность: " + energyObject.getPower());
+        System.out.println("Год ввода: " + energyObject.getCommissioningYear());
+        System.out.println("КПД: " + energyObject.getEfficiency());
+        System.out.println("Активен: " + energyObject.getActive());
+
         if (energyObject.getActive() == null) {
-            energyObject.setActive(true); // По умолчанию активен
+            energyObject.setActive(true);
+            System.out.println("Установлен активен по умолчанию");
         }
-        return energyObjectRepository.save(energyObject);
+
+        EnergyObject saved = energyObjectRepository.save(energyObject);
+        System.out.println("Сохранен объект с ID: " + saved.getId());
+
+        return saved;
     }
 
     @Transactional
@@ -65,11 +75,33 @@ public class EnergyObjectService {
         energyObjectRepository.delete(energyObject);
     }
 
-    public List<EnergyObject> searchEnergyObjects(String keyword, PageRequest pageRequest) {
+    public Page<EnergyObject> searchEnergyObjects(String keyword, Pageable pageable) {
         if (keyword == null || keyword.trim().isEmpty()) {
-            return energyObjectRepository.findAll();
+            return energyObjectRepository.findAll(pageable);
         }
-        return energyObjectRepository.searchByKeyword(keyword);
+
+        // Получаем все результаты поиска
+        List<EnergyObject> searchResults = energyObjectRepository.searchByKeyword(keyword);
+
+        // Рассчитываем пагинацию вручную
+        int pageSize = pageable.getPageSize();
+        int currentPage = pageable.getPageNumber();
+        int startItem = currentPage * pageSize;
+
+        List<EnergyObject> pageContent;
+
+        if (searchResults.size() < startItem) {
+            pageContent = List.of();
+        } else {
+            int toIndex = Math.min(startItem + pageSize, searchResults.size());
+            pageContent = searchResults.subList(startItem, toIndex);
+        }
+
+        return new PageImpl<>(
+                pageContent,
+                pageable,
+                searchResults.size()
+        );
     }
 
     public List<EnergyObject> getEnergyObjectsSorted(String sortBy, String direction) {

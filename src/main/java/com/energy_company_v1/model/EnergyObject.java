@@ -51,4 +51,20 @@ public class EnergyObject {
 
     @Size(max = 500, message = "Описание не должно превышать 500 символов")
     private String description;
+
+    @Override
+    public String toString() {
+        return "EnergyObject{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", location='" + location + '\'' +
+                ", power=" + power +
+                ", commissioningYear=" + commissioningYear +
+                ", efficiency=" + efficiency +
+                ", active=" + active +
+                ", description='" + description + '\'' +
+                ", lastMaintenanceDate=" + lastMaintenanceDate +
+                '}';
+    }
 }

@@ -46,25 +46,20 @@ public class EnergyObjectController {
             Page<EnergyObject> energyObjectsPage;
 
             if (keyword != null && !keyword.isEmpty()) {
-                // Поиск по ключевому слову
                 energyObjectsPage = energyObjectService.searchEnergyObjects(keyword,
                         PageRequest.of(page, size, Sort.by("id").descending()));
             } else {
-                // Все объекты с пагинацией
                 energyObjectsPage = energyObjectService.getAllEnergyObjects(
                         PageRequest.of(page, size, Sort.by("id").descending()));
             }
 
-            // Логирование для отладки
+            // Логирование
             System.out.println("=== СПИСОК ОБЪЕКТОВ ===");
             System.out.println("Всего элементов: " + energyObjectsPage.getTotalElements());
-            System.out.println("Страница: " + page + ", размер: " + size);
             System.out.println("Содержимое страницы: " + energyObjectsPage.getContent().size());
-            energyObjectsPage.getContent().forEach(obj ->
-                    System.out.println(" - " + obj.getId() + ": " + obj.getName()));
 
-            // Добавляем в модель
-            model.addAttribute("energyObjects", energyObjectsPage.getContent());
+            // Передаем Page целиком, а не только content
+            model.addAttribute("energyObjects", energyObjectsPage);  // ← Page, а не List
             model.addAttribute("currentPage", page);
             model.addAttribute("totalPages", energyObjectsPage.getTotalPages());
             model.addAttribute("totalItems", energyObjectsPage.getTotalElements());
@@ -74,8 +69,8 @@ public class EnergyObjectController {
             System.out.println("Ошибка при получении списка: " + e.getMessage());
             e.printStackTrace();
 
-            // В случае ошибки возвращаем пустой список
-            model.addAttribute("energyObjects", new ArrayList<EnergyObject>());
+            // В случае ошибки возвращаем пустую Page
+            model.addAttribute("energyObjects", Page.empty());
             model.addAttribute("currentPage", 0);
             model.addAttribute("totalPages", 0);
             model.addAttribute("totalItems", 0);
@@ -107,16 +102,25 @@ public class EnergyObjectController {
     public String createEnergyObject(@ModelAttribute EnergyObject energyObject,
                                      BindingResult result,
                                      RedirectAttributes redirectAttributes) {
+
+        System.out.println("=== POST /create ===");
+        System.out.println("Объект из формы: " + energyObject.toString());
+
         if (result.hasErrors()) {
-            // Если есть ошибки валидации
+            System.out.println("Ошибки валидации: " + result.getAllErrors());
             return "energy-objects/create";
         }
 
         try {
-            energyObjectService.createEnergyObject(energyObject);
+            EnergyObject created = energyObjectService.createEnergyObject(energyObject);
+            System.out.println("Успешно создан объект ID: " + created.getId());
+
             redirectAttributes.addFlashAttribute("success",
-                    "Энергообъект успешно создан!");
+                    "Энергообъект '" + created.getName() + "' успешно создан!");
         } catch (Exception e) {
+            System.out.println("Ошибка при создании: " + e.getMessage());
+            e.printStackTrace();
+
             redirectAttributes.addFlashAttribute("error",
                     "Ошибка при создании: " + e.getMessage());
         }
