@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>Энергообъекты - ЭнергоКомпания</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --dark-color: #1f2937;
+            --light-color: #f9fafb;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 80px 0 60px;
+            margin-bottom: 40px;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            height: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border: none;
+            padding: 20px;
+        }
+
+        .object-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-inactive {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+        }
+
+        .search-box {
+            border-radius: 25px;
+            padding: 12px 20px;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+
+        .search-box:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .table th {
+            border-top: none;
+            font-weight: 600;
+            color: var(--dark-color);
+            background-color: var(--light-color);
+        }
+
+        .action-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 3px;
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .pagination .page-link {
+            color: var(--primary-color);
+            border: none;
+            margin: 0 5px;
+            border-radius: 10px;
+        }
+
+        .pagination .page-item.active .page-link {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border: none;
+        }
+
+        .stats-card {
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .type-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin: 2px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .type-aes { background-color: rgba(245, 158, 11, 0.1); color: #d97706; }
+        .type-ges { background-color: rgba(59, 130, 246, 0.1); color: #2563eb; }
+        .type-tes { background-color: rgba(239, 68, 68, 0.1); color: #dc2626; }
+        .type-ses { background-color: rgba(245, 158, 11, 0.1); color: #d97706; }
+        .type-tetc { background-color: rgba(16, 185, 129, 0.1); color: #059669; }
+        .type-ves { background-color: rgba(139, 92, 246, 0.1); color: #7c3aed; }
+
+        .footer {
+            background: var(--dark-color);
+            color: white;
+            padding: 40px 0 20px;
+            margin-top: 60px;
+        }
+
+        .power-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .efficiency-bar {
+            height: 8px;
+            background-color: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .efficiency-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+<!-- Навигация -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">
+            <i class="bi bi-lightning-charge text-primary"></i>
+            <span class="fw-bold">ЭнергоКомпания</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/}">
+                        <i class="bi bi-house"></i> Главная
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{/energy-objects}">
+                        <i class="bi bi-lightbulb"></i> Энергообъекты
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/about}">
+                        <i class="bi bi-person"></i> Об авторе
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" th:href="@{/energy-objects/statistics}">
+                        <i class="bi bi-bar-chart"></i> Статистика
+                    </a>
+                </li>
+            </ul>
+
+            <div class="navbar-nav">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i>
+                        <span sec:authentication="name"></span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                <i class="bi bi-person"></i> Профиль
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form th:action="@{/logout}" method="post">
+                                <button class="dropdown-item" type="submit">
+                                    <i class="bi bi-box-arrow-right"></i> Выход
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Герой секция -->
+<div class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-5 fw-bold mb-3">
+                    <i class="bi bi-lightbulb"></i> Энергообъекты
+                </h1>
+                <p class="lead mb-4">
+                    Управление энергетическими объектами компании.
+                    Просмотр, добавление, редактирование и анализ данных.
+                </p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a th:href="@{/energy-objects/create}" class="btn btn-light btn-lg"
+                   sec:authorize="hasAnyRole('MODERATOR', 'ADMIN')">
+                    <i class="bi bi-plus-circle"></i> Добавить объект
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Основной контент -->
+<div class="container">
+    <!-- Панель поиска и фильтров -->
+    <div class="card mb-4 border-0 shadow-sm">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <form th:action="@{/energy-objects}" method="get" class="row g-3">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0">
+                                        <i class="bi bi-search"></i>
+                                    </span>
+                                <input type="text" name="search" class="form-control search-box border-start-0"
+                                       th:value="${search}" placeholder="Поиск по названию, местоположению...">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <select name="sortBy" class="form-select search-box">
+                                <option value="id" th:selected="${sortBy == 'id'}">Сортировка по ID</option>
+                                <option value="name" th:selected="${sortBy == 'name'}">По названию</option>
+                                <option value="power" th:selected="${sortBy == 'power'}">По мощности</option>
+                                <option value="efficiency" th:selected="${sortBy == 'efficiency'}">По КПД</option>
+                                <option value="commissioningYear" th:selected="${sortBy == 'commissioningYear'}">По году ввода</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select name="direction" class="form-select search-box">
+                                <option value="asc" th:selected="${direction == 'asc'}">По возрастанию</option>
+                                <option value="desc" th:selected="${direction == 'desc'}">По убыванию</option>
+                            </select>
+                        </div>
+                        <div class="col-md-1">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-filter"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <div class="d-flex justify-content-md-end">
+                        <a th:href="@{/energy-objects/statistics}" class="btn btn-outline-primary me-2"
+                           sec:authorize="hasRole('ADMIN')">
+                            <i class="bi bi-bar-chart"></i> Статистика
+                        </a>
+                        <span class="badge bg-light text-dark align-self-center">
+                                <i class="bi bi-database"></i>
+                                <span th:text="${energyObjects.totalElements}">0</span> объектов
+                            </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Сообщения -->
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i>
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Карточки для отображения на мобильных -->
+    <div class="d-block d-lg-none">
+        <div class="row" th:if="${!energyObjects.empty}">
+            <div class="col-12 mb-4" th:each="obj : ${energyObjects.content}">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-0" th:text="${obj.name}">Название</h5>
+                                <small class="opacity-75" th:text="${obj.location}">Местоположение</small>
+                            </div>
+                            <span th:classappend="${obj.active} ? 'status-active status-badge' : 'status-inactive status-badge'"
+                                  th:text="${obj.active} ? 'Активен' : 'Неактивен'">
+                                    Статус
+                                </span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <small class="text-muted d-block">Тип</small>
+                                <span class="type-badge" th:classappend="${'type-' + obj.type.toLowerCase()}"
+                                      th:text="${obj.type}">Тип</span>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <small class="text-muted d-block">Мощность</small>
+                                <div class="power-value" th:text="${obj.power} + ' МВт'">0 МВт</div>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <small class="text-muted d-block">КПД</small>
+                                <div>
+                                    <span th:text="${obj.efficiency} + '%'">0%</span>
+                                    <div class="efficiency-bar">
+                                        <div class="efficiency-fill" th:style="'width: ' + ${obj.efficiency} + '%;'"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <small class="text-muted d-block">Год ввода</small>
+                                <strong th:text="${obj.commissioningYear}">2000</strong>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <a th:href="@{/energy-objects/edit/{id}(id=${obj.id})}"
+                               class="btn btn-sm btn-outline-primary me-2"
+                               sec:authorize="hasAnyRole('MODERATOR', 'ADMIN')">
+                                <i class="bi bi-pencil"></i> Редактировать
+                            </a>
+                            <a th:href="@{/energy-objects/delete/{id}(id=${obj.id})}"
+                               class="btn btn-sm btn-outline-danger"
+                               onclick="return confirm('Вы уверены, что хотите удалить этот объект?')"
+                               sec:authorize="hasAnyRole('MODERATOR', 'ADMIN')">
+                                <i class="bi bi-trash"></i> Удалить
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Таблица для десктопов -->
+    <div class="d-none d-lg-block">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                        <tr>
+                            <th class="ps-4">Название</th>
+                            <th>Тип</th>
+                            <th>Местоположение</th>
+                            <th>Мощность</th>
+                            <th>КПД</th>
+                            <th>Год ввода</th>
+                            <th>Статус</th>
+                            <th class="text-end pe-4">Действия</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="obj : ${energyObjects.content}"
+                            th:class="${obj.active} ? '' : 'table-light'">
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        <i th:switch="${obj.type}" class="bi object-icon">
+                                            <i th:case="'АЭС'" class="bi bi-lightning-charge-fill text-warning"></i>
+                                            <i th:case="'ГЭС'" class="bi bi-droplet-fill text-primary"></i>
+                                            <i th:case="'ТЭЦ'" class="bi bi-thermometer-sun text-danger"></i>
+                                            <i th:case="'ТЭС'" class="bi bi-thermometer-sun text-danger"></i>
+                                            <i th:case="'СЭС'" class="bi bi-sun-fill text-warning"></i>
+                                            <i th:case="'ВЭС'" class="bi bi-wind text-info"></i>
+                                            <i th:case="*" class="bi bi-lightbulb text-secondary"></i>
+                                        </i>
+                                    </div>
+                                    <div>
+                                        <strong th:text="${obj.name}">Название</strong>
+                                        <div class="small text-muted" th:if="${obj.description}"
+                                             th:text="${#strings.abbreviate(obj.description, 30)}">
+                                            Описание
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                        <span class="type-badge" th:classappend="${'type-' + obj.type.toLowerCase()}"
+                                              th:text="${obj.type}">Тип</span>
+                            </td>
+                            <td th:text="${obj.location}">Местоположение</td>
+                            <td>
+                                <div class="power-value" th:text="${obj.power} + ' МВт'">0 МВт</div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3" style="min-width: 40px;" th:text="${obj.efficiency} + '%'">0%</div>
+                                    <div class="efficiency-bar" style="width: 100px;">
+                                        <div class="efficiency-fill" th:style="'width: ' + ${obj.efficiency} + '%;'"></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark" th:text="${obj.commissioningYear}">2000</span>
+                            </td>
+                            <td>
+                                        <span th:classappend="${obj.active} ? 'status-active status-badge' : 'status-inactive status-badge'"
+                                              th:text="${obj.active} ? 'Активен' : 'Неактивен'">
+                                            Статус
+                                        </span>
+                            </td>
+                            <td class="text-end pe-4">
+                                <a th:href="@{/energy-objects/edit/{id}(id=${obj.id})}"
+                                   class="btn btn-sm btn-outline-primary action-btn"
+                                   sec:authorize="hasAnyRole('MODERATOR', 'ADMIN')"
+                                   data-bs-toggle="tooltip" title="Редактировать">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a th:href="@{/energy-objects/delete/{id}(id=${obj.id})}"
+                                   class="btn btn-sm btn-outline-danger action-btn"
+                                   onclick="return confirm('Вы уверены, что хотите удалить этот объект?')"
+                                   sec:authorize="hasAnyRole('MODERATOR', 'ADMIN')"
+                                   data-bs-toggle="tooltip" title="Удалить">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <tr th:if="${energyObjects.empty}">
+                            <td colspan="8" class="text-center py-5">
+                                <i class="bi bi-lightbulb-off display-1 text-muted mb-3"></i>
+                                <h4 class="text-muted">Нет энергообъектов</h4>
+                                <p class="text-muted mb-4">Добавьте первый энергообъект в систему</p>
+                                <a th:href="@{/energy-objects/create}" class="btn btn-primary"
+                                   sec:authorize="hasAnyRole('MODERATOR', 'ADMIN')">
+                                    <i class="bi bi-plus-circle"></i> Добавить объект
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Пагинация -->
+    <div th:if="${energyObjects.totalPages > 1}" class="mt-4">
+        <nav aria-label="Навигация по страницам">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                    <a class="page-link" th:href="@{/energy-objects(page=${currentPage-1}, size=${energyObjects.size}, sortBy=${sortBy}, direction=${direction}, search=${search})}"
+                       aria-label="Предыдущая">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+
+                <li class="page-item" th:each="pageNum : ${#numbers.sequence(1, energyObjects.totalPages)}"
+                    th:classappend="${currentPage == pageNum-1} ? 'active'">
+                    <a class="page-link" th:href="@{/energy-objects(page=${pageNum-1}, size=${energyObjects.size}, sortBy=${sortBy}, direction=${direction}, search=${search})}"
+                       th:text="${pageNum}"></a>
+                </li>
+
+                <li class="page-item" th:classappend="${currentPage == energyObjects.totalPages-1} ? 'disabled'">
+                    <a class="page-link" th:href="@{/energy-objects(page=${currentPage+1}, size=${energyObjects.size}, sortBy=${sortBy}, direction=${direction}, search=${search})}"
+                       aria-label="Следующая">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Быстрые действия -->
+    <div class="row mt-5">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <i class="bi bi-plus-circle display-4 text-primary mb-3"></i>
+                    <h5>Добавить объект</h5>
+                    <p class="text-muted">Добавьте новый энергообъект в систему</p>
+                    <a th:href="@{/energy-objects/create}" class="btn btn-primary mt-2"
+                       sec:authorize="hasAnyRole('MODERATOR', 'ADMIN')">
+                        <i class="bi bi-plus"></i> Добавить
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <i class="bi bi-download display-4 text-success mb-3"></i>
+                    <h5>Экспорт данных</h5>
+                    <p class="text-muted">Экспортируйте данные в различных форматах</p>
+                    <button class="btn btn-outline-success mt-2" disabled>
+                        <i class="bi bi-file-earmark-excel"></i> Экспорт
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <i class="bi bi-bar-chart display-4 text-info mb-3"></i>
+                    <h5>Статистика</h5>
+                    <p class="text-muted">Аналитика и отчетность по объектам</p>
+                    <a th:href="@{/energy-objects/statistics}" class="btn btn-outline-info mt-2"
+                       sec:authorize="hasRole('ADMIN')">
+                        <i class="bi bi-graph-up"></i> Перейти
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Футер -->
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <h5 class="mb-3">
+                    <i class="bi bi-lightning-charge"></i> ЭнергоКомпания
+                </h5>
+                <p>Информационно-справочная система для управления энергетическими объектами. Проект разработан в рамках курсовой работы.</p>
+            </div>
+            <div class="col-lg-2 col-md-6 mb-4">
+                <h6 class="mb-3">Навигация</h6>
+                <ul class="list-unstyled">
+                    <li><a th:href="@{/}" class="text-white-50 text-decoration-none">Главная</a></li>
+                    <li><a th:href="@{/energy-objects}" class="text-white-50 text-decoration-none">Энергообъекты</a></li>
+                    <li><a th:href="@{/about}" class="text-white-50 text-decoration-none">Об авторе</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <h6 class="mb-3">Система</h6>
+                <ul class="list-unstyled">
+                    <li>
+            <span class="text-white-50">
+                <i class="bi bi-database me-1"></i>
+                Объектов: <span th:text="${energyObjects.totalElements}">0</span>
+            </span>
+                    </li>
+                    <li>
+            <span class="text-white-50">
+                <i class="bi bi-person me-1"></i>
+                Пользователей: <span th:text="${userCount}">0</span>
+            </span>
+                    </li>
+                    <li>
+            <span class="text-white-50">
+                <i class="bi bi-lightning-charge me-1"></i>
+                Активных: <span th:text="${activeObjectsCount}">0</span>
+            </span>
+                    </li>
+                    <li>
+            <span class="text-white-50">
+                <i class="bi bi-cpu me-1"></i>
+                Мощность: <span th:text="${#numbers.formatDecimal(totalActivePower, 1, 2)}">0</span> МВт
+            </span>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-lg-3 mb-4">
+                <h6 class="mb-3">Технологии</h6>
+                <div class="d-flex flex-wrap">
+                    <span class="badge bg-secondary me-2 mb-2">Spring Boot</span>
+                    <span class="badge bg-secondary me-2 mb-2">Thymeleaf</span>
+                    <span class="badge bg-secondary me-2 mb-2">PostgreSQL</span>
+                    <span class="badge bg-secondary me-2 mb-2">Bootstrap 5</span>
+                </div>
+            </div>
+        </div>
+        <hr class="my-4 bg-white-50">
+        <div class="row">
+            <div class="col-md-6">
+                <p class="mb-0">© 2024 ЭнергоКомпания. Все права защищены.</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <p class="mb-0">Курсовой проект по CoBP Технологии программирования</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Инициализация тултипов
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Автоматическое скрытие сообщений
+        setTimeout(function() {
+            var alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                var bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+
+        // Подтверждение удаления
+        window.confirmDelete = function(message) {
+            return confirm(message || 'Вы уверены, что хотите удалить этот объект?');
+        };
+    });
+</script>
+</body>
+</html>

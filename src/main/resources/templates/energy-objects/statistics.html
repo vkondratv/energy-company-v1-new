@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Статистика</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div layout:fragment="content">
+    <h1 class="mb-4"><i class="bi bi-bar-chart"></i> Статистика энергообъектов</h1>
+
+    <div class="row" th:if="${statistics}">
+        <!-- Общая статистика -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Общая информация</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="text-center p-3 bg-light rounded">
+                                <h3 th:text="${statistics.totalObjects}" class="text-primary">0</h3>
+                                <small class="text-muted">Всего объектов</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-center p-3 bg-light rounded">
+                                <h3 th:text="${statistics.activeObjects}" class="text-success">0</h3>
+                                <small class="text-muted">Активных объектов</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-6">
+                            <div class="text-center p-3 bg-light rounded">
+                                <h3 th:text="${#numbers.formatDecimal(statistics.averagePower, 1, 2)} + ' МВт'"
+                                    class="text-info">0 МВт</h3>
+                                <small class="text-muted">Средняя мощность</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-center p-3 bg-light rounded">
+                                <h3 th:text="${#numbers.formatDecimal(statistics.totalActivePower, 1, 2)} + ' МВт'"
+                                    class="text-warning">0 МВт</h3>
+                                <small class="text-muted">Общая мощность активных</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Распределение по типам -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Распределение по типам</h5>
+                </div>
+                <div class="card-body">
+                    <div style="height: 300px;">
+                        <canvas id="typeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Таблица распределения -->
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Детальная статистика по типам</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>Тип объекта</th>
+                                <th>Количество</th>
+                                <th>Доля (%)</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="item : ${statistics.countByType}">
+                                <td th:text="${item[0]}">Тип</td>
+                                <td th:text="${item[1]}">0</td>
+                                <td>
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar"
+                                             th:style="'width: ' + ${item[1] / statistics.totalObjects * 100} + '%;'"
+                                             th:text="${#numbers.formatDecimal(item[1] / statistics.totalObjects * 100, 1, 1)} + '%'">
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a th:href="@{/energy-objects}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Назад к списку
+        </a>
+        <button onclick="window.print()" class="btn btn-outline-primary ms-2">
+            <i class="bi bi-printer"></i> Печать отчета
+        </button>
+    </div>
+</div>
+
+<script layout:fragment="scripts">
+    document.addEventListener('DOMContentLoaded', function() {
+        // Данные для графика
+        const typeData = [
+            th:block="${statistics.countByType}">
+            ['[[${item[0]}]]', [[${item[1]}]],
+        ];
+
+        // Создание круговой диаграммы
+        const ctx = document.getElementById('typeChart').getContext('2d');
+        const typeChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: typeData.map(item => item[0]),
+                datasets: [{
+                    data: typeData.map(item => item[1]),
+                    backgroundColor: [
+                        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
+                        '#9966FF', '#FF9F40', '#C9CBCF'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((value / total) * 100);
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

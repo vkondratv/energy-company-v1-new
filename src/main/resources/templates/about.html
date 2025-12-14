@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Об авторе</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h2 class="mb-0"><i class="bi bi-person-badge"></i> Об авторе</h2>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <i class="bi bi-person-circle" style="font-size: 5rem; color: #6c757d;"></i>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>Информация об авторе</h4>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <strong>ФИО:</strong>
+                                    <span th:text="${authorName}">Иванов Иван Иванович</span>
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Должность:</strong>
+                                    <span th:text="${authorInfo}">Разработчик информационных систем</span>
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Email:</strong>
+                                    <a th:href="'mailto:' + ${contactEmail}"
+                                       th:text="${contactEmail}">author@example.com</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h4>О проекте</h4>
+                            <p>
+                                Информационно-справочная система для энергетической компании
+                                разработана с использованием современных технологий:
+                            </p>
+                            <ul>
+                                <li>Spring Boot 2.7+</li>
+                                <li>Spring Security для аутентификации и авторизации</li>
+                                <li>Spring Data JPA для работы с базой данных</li>
+                                <li>Thymeleaf для отображения представлений</li>
+                                <li>Bootstrap 5 для адаптивного дизайна</li>
+                            </ul>
+                            <p>
+                                Система обеспечивает безопасное хранение и управление данными
+                                энергетических объектов с разграничением прав доступа.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <h5>Функциональные возможности:</h5>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="card text-center h-100">
+                                    <div class="card-body">
+                                        <i class="bi bi-shield-lock" style="font-size: 2rem;"></i>
+                                        <h6 class="card-title mt-2">Безопасность</h6>
+                                        <p class="card-text small">Надежная система регистрации и авторизации</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card text-center h-100">
+                                    <div class="card-body">
+                                        <i class="bi bi-table" style="font-size: 2rem;"></i>
+                                        <h6 class="card-title mt-2">Управление данными</h6>
+                                        <p class="card-text small">CRUD операции с энергообъектами</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card text-center h-100">
+                                    <div class="card-body">
+                                        <i class="bi bi-bar-chart" style="font-size: 2rem;"></i>
+                                        <h6 class="card-title mt-2">Аналитика</h6>
+                                        <p class="card-text small">Статистика и отчетность</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
