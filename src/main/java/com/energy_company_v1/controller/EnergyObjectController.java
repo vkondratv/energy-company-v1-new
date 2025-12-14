@@ -8,6 +8,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,8 +17,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
-import java.util.List;
-import java.util.Map;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -34,92 +37,62 @@ public class EnergyObjectController {
     }
 
     @GetMapping
-    public String listEnergyObjects(
-            @RequestParam(required = false) String search,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "asc") String direction,
-            Model model) {
+    public String listEnergyObjects(Model model,
+                                    @RequestParam(required = false) String keyword,
+                                    @RequestParam(defaultValue = "0") int page,
+                                    @RequestParam(defaultValue = "10") int size) {
 
         try {
-            // 1. Создаем Pageable для пагинации и сортировки
-            Sort.Direction sortDirection = "desc".equalsIgnoreCase(direction)
-                    ? Sort.Direction.DESC : Sort.Direction.ASC;
-            Sort sort = Sort.by(sortDirection, sortBy);
-            Pageable pageable = PageRequest.of(page, size, sort);
+            Page<EnergyObject> energyObjectsPage;
 
-            Page<EnergyObject> energyObjectPage;
-
-            // 2. Обрабатываем поиск
-            if (search != null && !search.trim().isEmpty()) {
-                List<EnergyObject> searchResults = energyObjectService.searchEnergyObjects(search);
-
-                // Конвертируем List в Page для пагинации
-                int start = (int) pageable.getOffset();
-                int end = Math.min((start + pageable.getPageSize()), searchResults.size());
-                List<EnergyObject> pageContent = searchResults.subList(start, end);
-
-                energyObjectPage = new PageImpl<>(
-                        pageContent,
-                        pageable,
-                        searchResults.size()
-                );
-                model.addAttribute("search", search);
+            if (keyword != null && !keyword.isEmpty()) {
+                // Поиск по ключевому слову
+                energyObjectsPage = energyObjectService.searchEnergyObjects(keyword,
+                        PageRequest.of(page, size, Sort.by("id").descending()));
             } else {
-                energyObjectPage = energyObjectService.getAllEnergyObjects(pageable);
+                // Все объекты с пагинацией
+                energyObjectsPage = energyObjectService.getAllEnergyObjects(
+                        PageRequest.of(page, size, Sort.by("id").descending()));
             }
 
-            // 3. Получаем дополнительные данные для футера и статистики
-            long userCount = userRepository.count(); // Количество пользователей
-            long activeObjectsCount = energyObjectService.getAllEnergyObjects()
-                    .stream()
-                    .filter(EnergyObject::getActive)
-                    .count(); // Количество активных объектов
+            // Логирование для отладки
+            System.out.println("=== СПИСОК ОБЪЕКТОВ ===");
+            System.out.println("Всего элементов: " + energyObjectsPage.getTotalElements());
+            System.out.println("Страница: " + page + ", размер: " + size);
+            System.out.println("Содержимое страницы: " + energyObjectsPage.getContent().size());
+            energyObjectsPage.getContent().forEach(obj ->
+                    System.out.println(" - " + obj.getId() + ": " + obj.getName()));
 
-            // 4. Получаем статистику по типам объектов
-            Map<String, Long> typeStatistics = energyObjectService.getAllEnergyObjects()
-                    .stream()
-                    .collect(Collectors.groupingBy(
-                            EnergyObject::getType,
-                            Collectors.counting()
-                    ));
-
-            // 5. Добавляем все атрибуты в модель
-            model.addAttribute("energyObjects", energyObjectPage);
+            // Добавляем в модель
+            model.addAttribute("energyObjects", energyObjectsPage.getContent());
             model.addAttribute("currentPage", page);
-            model.addAttribute("totalPages", energyObjectPage.getTotalPages());
-            model.addAttribute("sortBy", sortBy);
-            model.addAttribute("direction", direction);
-
-            // Данные для футера
-            model.addAttribute("userCount", userCount);
-            model.addAttribute("activeObjectsCount", activeObjectsCount);
-            model.addAttribute("typeStatistics", typeStatistics);
-
-            // 6. Генерируем номера страниц для пагинации
-            int totalPages = energyObjectPage.getTotalPages();
-            if (totalPages > 0) {
-                List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
-                        .boxed()
-                        .collect(Collectors.toList());
-                model.addAttribute("pageNumbers", pageNumbers);
-            }
-
-            // 7. Рассчитываем общую мощность всех активных объектов
-            Double totalActivePower = energyObjectService.getAllEnergyObjects()
-                    .stream()
-                    .filter(EnergyObject::getActive)
-                    .mapToDouble(EnergyObject::getPower)
-                    .sum();
-            model.addAttribute("totalActivePower", totalActivePower != null ? totalActivePower : 0);
+            model.addAttribute("totalPages", energyObjectsPage.getTotalPages());
+            model.addAttribute("totalItems", energyObjectsPage.getTotalElements());
+            model.addAttribute("keyword", keyword);
 
         } catch (Exception e) {
-            model.addAttribute("errorMessage", "Ошибка при загрузке данных: " + e.getMessage());
-            e.printStackTrace(); // Для отладки
+            System.out.println("Ошибка при получении списка: " + e.getMessage());
+            e.printStackTrace();
+
+            // В случае ошибки возвращаем пустой список
+            model.addAttribute("energyObjects", new ArrayList<EnergyObject>());
+            model.addAttribute("currentPage", 0);
+            model.addAttribute("totalPages", 0);
+            model.addAttribute("totalItems", 0);
+            model.addAttribute("keyword", keyword);
         }
 
         return "energy-objects/list";
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<EnergyObject>> getAllEnergyObjects() {
+        try {
+            List<EnergyObject> energyObjects = energyObjectService.getAllEnergyObjects();
+            return ResponseEntity.ok(energyObjects);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     // Остальные методы остаются без изменений...
@@ -131,52 +104,51 @@ public class EnergyObjectController {
     }
 
     @PostMapping("/create")
-    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
-    public String createEnergyObject(@Valid @ModelAttribute EnergyObject energyObject,
+    public String createEnergyObject(@ModelAttribute EnergyObject energyObject,
                                      BindingResult result,
-                                     Model model) {
+                                     RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
+            // Если есть ошибки валидации
             return "energy-objects/create";
         }
 
         try {
             energyObjectService.createEnergyObject(energyObject);
-            return "redirect:/energy-objects?success=Объект успешно создан";
+            redirectAttributes.addFlashAttribute("success",
+                    "Энергообъект успешно создан!");
         } catch (Exception e) {
-            model.addAttribute("errorMessage", "Ошибка при создании объекта: " + e.getMessage());
-            return "energy-objects/create";
+            redirectAttributes.addFlashAttribute("error",
+                    "Ошибка при создании: " + e.getMessage());
         }
+
+        return "redirect:/energy-objects";
     }
 
     @GetMapping("/edit/{id}")
-    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
-    public String showEditForm(@PathVariable Long id, Model model) {
+    public String editForm(@PathVariable Long id, Model model) {
         try {
+            // Ваш метод возвращает EnergyObject, а не Optional
             EnergyObject energyObject = energyObjectService.getEnergyObjectById(id);
             model.addAttribute("energyObject", energyObject);
             return "energy-objects/edit";
         } catch (RuntimeException e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            return "redirect:/energy-objects";
+            // Если объект не найден, перенаправляем с сообщением об ошибке
+            return "redirect:/energy-objects?error=Object+not+found";
         }
     }
 
-    @PostMapping("/edit/{id}")
-    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
+    // Метод для обработки обновления
+    @PostMapping("/update/{id}")
     public String updateEnergyObject(@PathVariable Long id,
-                                     @Valid @ModelAttribute EnergyObject energyObject,
-                                     BindingResult result,
-                                     Model model) {
-        if (result.hasErrors()) {
-            return "energy-objects/edit";
-        }
-
+                                     @ModelAttribute EnergyObject energyObject,
+                                     RedirectAttributes redirectAttributes) {
         try {
             energyObjectService.updateEnergyObject(id, energyObject);
-            return "redirect:/energy-objects?success=Объект успешно обновлен";
+            redirectAttributes.addFlashAttribute("successMessage", "Энергообъект успешно обновлен!");
+            return "redirect:/energy-objects";
         } catch (Exception e) {
-            model.addAttribute("errorMessage", "Ошибка при обновлении объекта: " + e.getMessage());
-            return "energy-objects/edit";
+            redirectAttributes.addFlashAttribute("errorMessage", "Ошибка при обновлении: " + e.getMessage());
+            return "redirect:/energy-objects/edit/" + id;
         }
     }
 
@@ -193,7 +165,11 @@ public class EnergyObjectController {
     }
 
     public Map<String, Object> getEnhancedStatistics() {
-        List<EnergyObject> allObjects = getAllEnergyObjects();
+        ResponseEntity<List<EnergyObject>> response = getAllEnergyObjects();
+        List<EnergyObject> allObjects = new ArrayList<>();
+        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+            allObjects = response.getBody();
+        }
         long totalObjects = allObjects.size();
 
         if (totalObjects == 0) {
@@ -264,23 +240,22 @@ public class EnergyObjectController {
                 .max((o1, o2) -> o1.getCommissioningYear().compareTo(o2.getCommissioningYear()))
                 .orElse(null);
 
-        return Map.of(
-                "totalObjects", totalObjects,
-                "activeObjects", activeObjects,
-                "inactiveObjects", inactiveObjects,
-                "totalPower", Math.round(totalPower * 100.0) / 100.0,
-                "averagePower", Math.round(averagePower * 100.0) / 100.0,
-                "averageEfficiency", Math.round(averageEfficiency * 10.0) / 10.0,
-                "typeDistribution", typeDistribution,
-                "typePercentages", typePercentages,
-                "powerByType", powerByType,
-                "efficiencyByType", efficiencyByType,
-                "oldestObject", oldestObject,
-                "newestObject", newestObject,
-                "activePercentage", Math.round((activeObjects * 100.0 / totalObjects) * 10.0) / 10.0
-        );
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("totalObjects", totalObjects);
+        stats.put("activeObjects", activeObjects);
+        stats.put("inactiveObjects", inactiveObjects);
+        stats.put("totalPower", Math.round(totalPower * 100.0) / 100.0);
+        stats.put("averagePower", Math.round(averagePower * 100.0) / 100.0);
+        stats.put("averageEfficiency", Math.round(averageEfficiency * 10.0) / 10.0);
+        stats.put("typeDistribution", typeDistribution);
+        stats.put("typePercentages", typePercentages);
+        stats.put("powerByType", powerByType);
+        stats.put("efficiencyByType", efficiencyByType);
+        stats.put("oldestObject", oldestObject);
+        stats.put("newestObject", newestObject);
+        stats.put("activePercentage", Math.round((activeObjects * 100.0 / totalObjects) * 10.0) / 10.0);
+        return stats;
     }
-
     @GetMapping("/statistics")
     @PreAuthorize("hasRole('ADMIN')")
     public String showStatistics(Model model) {

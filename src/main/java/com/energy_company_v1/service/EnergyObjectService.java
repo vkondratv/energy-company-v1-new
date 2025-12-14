@@ -3,6 +3,7 @@ package com.energy_company_v1.service;
 import com.energy_company_v1.model.EnergyObject;
 import com.energy_company_v1.repository.EnergyObjectRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,10 @@ public class EnergyObjectService {
 
     @Transactional
     public EnergyObject createEnergyObject(EnergyObject energyObject) {
+        // Убедитесь, что объект сохраняется с корректными значениями
+        if (energyObject.getActive() == null) {
+            energyObject.setActive(true); // По умолчанию активен
+        }
         return energyObjectRepository.save(energyObject);
     }
 
@@ -60,7 +65,7 @@ public class EnergyObjectService {
         energyObjectRepository.delete(energyObject);
     }
 
-    public List<EnergyObject> searchEnergyObjects(String keyword) {
+    public List<EnergyObject> searchEnergyObjects(String keyword, PageRequest pageRequest) {
         if (keyword == null || keyword.trim().isEmpty()) {
             return energyObjectRepository.findAll();
         }
@@ -91,5 +96,16 @@ public class EnergyObjectService {
                 "totalObjects", totalObjects,
                 "activeObjects", activeObjects
         );
+    }
+
+    public List<EnergyObject> getAllEnergyObjectsByFilters(Map<String, String> filters) {
+        // Если нет фильтров, возвращаем все объекты
+        if (filters == null || filters.isEmpty()) {
+            return energyObjectRepository.findAll();
+        }
+
+        // Здесь можно реализовать логику фильтрации
+        // Пока возвращаем все объекты
+        return energyObjectRepository.findAll();
     }
 }
