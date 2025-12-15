@@ -34,4 +34,14 @@ public interface EnergyObjectRepository extends JpaRepository<EnergyObject, Long
 
     @Query("SELECT e.type, COUNT(e) FROM EnergyObject e GROUP BY e.type")
     List<Object[]> countByType();
+
+    @Query("SELECT e FROM EnergyObject e WHERE " +
+            "LOWER(e.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(e.location) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(e.type) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    Page<EnergyObject> searchByKeywordPageable(@Param("keyword") String keyword, Pageable pageable);
+
+    // Или более простой вариант:
+    Page<EnergyObject> findByNameContainingIgnoreCaseOrLocationContainingIgnoreCaseOrTypeContainingIgnoreCase(
+            String name, String location, String type, Pageable pageable);
 }

@@ -57,18 +57,29 @@ public class MainController {
         return "register";
     }
 
+
     @GetMapping("/about")
-    public String about(Model model) {
-        model.addAttribute("authorName", "Иванов Иван Иванович");
-        model.addAttribute("authorInfo", "Студент, разработчик информационных систем");
-        model.addAttribute("contactEmail", "example@university.edu");
+    public String aboutPage(Model model) {
+            // Данные об авторе
+        model.addAttribute("authorName", "Владислав Кондратьев");
+        model.addAttribute("authorInfo", "Разработчик информационных систем");
+        model.addAttribute("contactEmail", "vkondratv@example.com");
+        model.addAttribute("projectDescription",
+                    "Информационно-справочная система для управления энергетическими объектами компании");
 
-        // Данные для футера
-        long userCount = userRepository.count();
-        model.addAttribute("userCount", userCount);
+            // Технологии
+        model.addAttribute("technologies", new String[] {
+                    "Spring Boot 3.1+",
+                    "Spring Security 6+",
+                    "Spring Data JPA",
+                    "Thymeleaf",
+                    "Bootstrap 5",
+                    "PostgreSQL/MySQL"
+        });
 
-        return "about";
+        return "about"; // Возвращает шаблон about.html
     }
+
 
     @GetMapping("/access-denied")
     public String accessDenied(Model model) {

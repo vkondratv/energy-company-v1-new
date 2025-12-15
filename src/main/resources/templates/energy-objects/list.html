@@ -191,6 +191,16 @@
         }
     </style>
 </head>
+<div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+    <span th:text="${successMessage}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <span th:text="${errorMessage}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
 <body>
 <!-- Навигация -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
@@ -221,7 +231,7 @@
                         <i class="bi bi-person"></i> Об авторе
                     </a>
                 </li>
-                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                <li class="nav-item" sec:authorize="hasAnyRole('USER', 'MODERATOR', 'ADMIN')">
                     <a class="nav-link" th:href="@{/energy-objects/statistics}">
                         <i class="bi bi-bar-chart"></i> Статистика
                     </a>
@@ -235,8 +245,9 @@
                         <span sec:authentication="name"></span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
+                        <!-- ДОБАВЬТЕ th:href -->
                         <li>
-                            <a class="dropdown-item" href="#">
+                            <a class="dropdown-item" th:href="@{/profile}">
                                 <i class="bi bi-person"></i> Профиль
                             </a>
                         </li>
@@ -249,7 +260,7 @@
                             </form>
                         </li>
                     </ul>
-                </div>
+                </div></div>
             </div>
         </div>
     </div>
@@ -320,7 +331,7 @@
                 <div class="col-md-4 text-md-end mt-3 mt-md-0">
                     <div class="d-flex justify-content-md-end">
                         <a th:href="@{/energy-objects/statistics}" class="btn btn-outline-primary me-2"
-                           sec:authorize="hasRole('ADMIN')">
+                           sec:authorize="hasAnyRole('USER', 'MODERATOR', 'ADMIN')">
                             <i class="bi bi-bar-chart"></i> Статистика
                         </a>
                         <span class="badge bg-light text-dark align-self-center">
@@ -514,7 +525,12 @@
         <nav aria-label="Навигация по страницам">
             <ul class="pagination justify-content-center">
                 <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                    <a class="page-link" th:href="@{/energy-objects(page=${currentPage-1}, size=${energyObjects.size}, sortBy=${sortBy}, direction=${direction}, search=${search})}"
+                    <!-- ИСПРАВИТЬ ЭТУ СТРОКУ: добавить search -->
+                    <a class="page-link"
+                       th:href="@{/energy-objects(page=${currentPage-1},
+                                   search=${search},
+                                   sortBy=${sortBy},
+                                   direction=${direction})}"
                        aria-label="Предыдущая">
                         <i class="bi bi-chevron-left"></i>
                     </a>
@@ -522,12 +538,22 @@
 
                 <li class="page-item" th:each="pageNum : ${#numbers.sequence(1, energyObjects.totalPages)}"
                     th:classappend="${currentPage == pageNum-1} ? 'active'">
-                    <a class="page-link" th:href="@{/energy-objects(page=${pageNum-1}, size=${energyObjects.size}, sortBy=${sortBy}, direction=${direction}, search=${search})}"
+                    <!-- ИСПРАВИТЬ ЭТУ СТРОКУ: добавить search -->
+                    <a class="page-link"
+                       th:href="@{/energy-objects(page=${pageNum-1},
+                                   search=${search},
+                                   sortBy=${sortBy},
+                                   direction=${direction})}"
                        th:text="${pageNum}"></a>
                 </li>
 
                 <li class="page-item" th:classappend="${currentPage == energyObjects.totalPages-1} ? 'disabled'">
-                    <a class="page-link" th:href="@{/energy-objects(page=${currentPage+1}, size=${energyObjects.size}, sortBy=${sortBy}, direction=${direction}, search=${search})}"
+                    <!-- ИСПРАВИТЬ ЭТУ СТРОКУ: добавить search -->
+                    <a class="page-link"
+                       th:href="@{/energy-objects(page=${currentPage+1},
+                                   search=${search},
+                                   sortBy=${sortBy},
+                                   direction=${direction})}"
                        aria-label="Следующая">
                         <i class="bi bi-chevron-right"></i>
                     </a>
@@ -538,14 +564,13 @@
 
     <!-- Быстрые действия -->
     <div class="row mt-5">
-        <div class="col-md-4 mb-4">
+        <div class="col-md-4 mb-4" sec:authorize="hasAnyRole('MODERATOR', 'ADMIN')">
             <div class="card h-100 border-0 shadow-sm">
                 <div class="card-body text-center p-4">
                     <i class="bi bi-plus-circle display-4 text-primary mb-3"></i>
                     <h5>Добавить объект</h5>
                     <p class="text-muted">Добавьте новый энергообъект в систему</p>
-                    <a th:href="@{/energy-objects/create}" class="btn btn-primary mt-2"
-                       sec:authorize="hasAnyRole('MODERATOR', 'ADMIN')">
+                    <a th:href="@{/energy-objects/create}" class="btn btn-primary mt-2">
                         <i class="bi bi-plus"></i> Добавить
                     </a>
                 </div>
@@ -558,7 +583,11 @@
                     <i class="bi bi-download display-4 text-success mb-3"></i>
                     <h5>Экспорт данных</h5>
                     <p class="text-muted">Экспортируйте данные в различных форматах</p>
-                    <button class="btn btn-outline-success mt-2" disabled>
+                    <!-- Кнопка активна для USER, MODERATOR, ADMIN -->
+                    <button class="btn btn-outline-success mt-2"
+                            id="exportBtn"
+                            sec:authorize="hasAnyRole('USER', 'MODERATOR', 'ADMIN')"
+                            onclick="exportData()">
                         <i class="bi bi-file-earmark-excel"></i> Экспорт
                     </button>
                 </div>
@@ -572,7 +601,7 @@
                     <h5>Статистика</h5>
                     <p class="text-muted">Аналитика и отчетность по объектам</p>
                     <a th:href="@{/energy-objects/statistics}" class="btn btn-outline-info mt-2"
-                       sec:authorize="hasRole('ADMIN')">
+                       sec:authorize="hasAnyRole('USER', 'MODERATOR', 'ADMIN')">
                         <i class="bi bi-graph-up"></i> Перейти
                     </a>
                 </div>
@@ -668,6 +697,17 @@
                 bsAlert.close();
             });
         }, 5000);
+
+        function exportData() {
+    // Получаем текущие параметры поиска и сортировки
+        const search = new URLSearchParams(window.location.search);
+
+    // Добавляем параметр для экспорта
+        search.set('export', 'excel');
+
+    // Перенаправляем на URL экспорта
+        window.location.href = '/energy-objects/export?' + search.toString();
+    }
 
         // Подтверждение удаления
         window.confirmDelete = function(message) {

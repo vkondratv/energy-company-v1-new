@@ -77,7 +77,7 @@ public class EnergyObjectService {
 
     public Page<EnergyObject> searchEnergyObjects(String keyword, Pageable pageable) {
         if (keyword == null || keyword.trim().isEmpty()) {
-            return energyObjectRepository.findAll(pageable);
+            return energyObjectRepository.searchByKeywordPageable(keyword.toLowerCase(), pageable);
         }
 
         // Получаем все результаты поиска

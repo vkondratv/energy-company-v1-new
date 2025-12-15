@@ -38,43 +38,56 @@ public class EnergyObjectController {
 
     @GetMapping
     public String listEnergyObjects(Model model,
-                                    @RequestParam(required = false) String keyword,
+                                    @RequestParam(required = false) String search, // Изменил keyword на search
+                                    @RequestParam(defaultValue = "id") String sortBy,
+                                    @RequestParam(defaultValue = "desc") String direction,
                                     @RequestParam(defaultValue = "0") int page,
                                     @RequestParam(defaultValue = "10") int size) {
 
         try {
             Page<EnergyObject> energyObjectsPage;
 
-            if (keyword != null && !keyword.isEmpty()) {
-                energyObjectsPage = energyObjectService.searchEnergyObjects(keyword,
-                        PageRequest.of(page, size, Sort.by("id").descending()));
+            // Определяем направление сортировки
+            Sort.Direction sortDirection = "asc".equalsIgnoreCase(direction)
+                    ? Sort.Direction.ASC : Sort.Direction.DESC;
+
+            // Создаем объект сортировки
+            Sort sort = Sort.by(sortDirection, sortBy);
+            Pageable pageable = PageRequest.of(page, size, sort);
+
+            // Поиск с учетом ключевого слова (теперь search вместо keyword)
+            if (search != null && !search.trim().isEmpty()) {
+                energyObjectsPage = energyObjectService.searchEnergyObjects(search, pageable);
             } else {
-                energyObjectsPage = energyObjectService.getAllEnergyObjects(
-                        PageRequest.of(page, size, Sort.by("id").descending()));
+                energyObjectsPage = energyObjectService.getAllEnergyObjects(pageable);
             }
 
-            // Логирование
-            System.out.println("=== СПИСОК ОБЪЕКТОВ ===");
-            System.out.println("Всего элементов: " + energyObjectsPage.getTotalElements());
-            System.out.println("Содержимое страницы: " + energyObjectsPage.getContent().size());
+            // Для отладки
+            System.out.println("=== ПАРАМЕТРЫ ===");
+            System.out.println("Поиск: " + search);
+            System.out.println("Сортировка по: " + sortBy);
+            System.out.println("Направление: " + direction);
 
-            // Передаем Page целиком, а не только content
-            model.addAttribute("energyObjects", energyObjectsPage);  // ← Page, а не List
+            // Передаем данные в модель
+            model.addAttribute("energyObjects", energyObjectsPage);
             model.addAttribute("currentPage", page);
             model.addAttribute("totalPages", energyObjectsPage.getTotalPages());
             model.addAttribute("totalItems", energyObjectsPage.getTotalElements());
-            model.addAttribute("keyword", keyword);
+            model.addAttribute("search", search);       // Изменил keyword на search
+            model.addAttribute("sortBy", sortBy);
+            model.addAttribute("direction", direction);
 
         } catch (Exception e) {
-            System.out.println("Ошибка при получении списка: " + e.getMessage());
+            System.out.println("Ошибка: " + e.getMessage());
             e.printStackTrace();
 
-            // В случае ошибки возвращаем пустую Page
             model.addAttribute("energyObjects", Page.empty());
             model.addAttribute("currentPage", 0);
             model.addAttribute("totalPages", 0);
             model.addAttribute("totalItems", 0);
-            model.addAttribute("keyword", keyword);
+            model.addAttribute("search", search);
+            model.addAttribute("sortBy", sortBy);
+            model.addAttribute("direction", direction);
         }
 
         return "energy-objects/list";
@@ -89,6 +102,8 @@ public class EnergyObjectController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+
 
     // Остальные методы остаются без изменений...
     @GetMapping("/create")
@@ -158,12 +173,13 @@ public class EnergyObjectController {
 
     @GetMapping("/delete/{id}")
     @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
-    public String deleteEnergyObject(@PathVariable Long id, Model model) {
+    public String deleteEnergyObject(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             energyObjectService.deleteEnergyObject(id);
-            return "redirect:/energy-objects?success=Объект успешно удален";
+            redirectAttributes.addFlashAttribute("successMessage", "Энергообъект успешно удален!");
+            return "redirect:/energy-objects";
         } catch (RuntimeException e) {
-            model.addAttribute("errorMessage", "Ошибка при удалении объекта: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Ошибка при удалении объекта: " + e.getMessage());
             return "redirect:/energy-objects";
         }
     }
@@ -261,7 +277,7 @@ public class EnergyObjectController {
         return stats;
     }
     @GetMapping("/statistics")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'MODERATOR', 'ADMIN')")
     public String showStatistics(Model model) {
         try {
             // Получаем расширенную статистику

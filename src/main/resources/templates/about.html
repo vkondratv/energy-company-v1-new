@@ -1,99 +1,402 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout}">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Об авторе</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Об авторе - ЭнергоКомпания</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+    <!-- Кастомные стили -->
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --accent-color: #4cc9f0;
+            --light-bg: #f8f9fa;
+            --dark-bg: #212529;
+        }
+
+        .hero-about {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 80px 0 50px;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-about::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .author-avatar {
+            width: 180px;
+            height: 180px;
+            background: linear-gradient(135deg, var(--accent-color) 0%, #7209b7 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            border: 5px solid white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .author-avatar i {
+            font-size: 80px;
+            color: white;
+        }
+
+        .feature-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .tech-badge {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 8px 18px;
+            border-radius: 50px;
+            margin: 5px;
+            display: inline-block;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .tech-badge:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .contact-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .contact-link:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+            margin: 30px 0;
+        }
+
+        .timeline::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, var(--primary-color), var(--accent-color));
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .timeline-item::before {
+            content: "";
+            position: absolute;
+            left: -36px;
+            top: 5px;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px var(--primary-color);
+        }
+
+        .stats-counter {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
 </head>
 <body>
-<div layout:fragment="content">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header bg-info text-white">
-                    <h2 class="mb-0"><i class="bi bi-person-badge"></i> Об авторе</h2>
+<!-- Навигация (как в layout.html) -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <i class="bi bi-lightning-charge-fill me-2"></i>
+            <span class="fw-bold">ЭнергоКомпания</span>
+        </a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link" href="/"><i class="bi bi-house me-1"></i>Главная</a>
+            <a class="nav-link active" href="/about"><i class="bi bi-person me-1"></i>Об авторе</a>
+            <a class="nav-link" href="/energy-objects"><i class="bi bi-lightbulb me-1"></i>Энергообъекты</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Герой-секция -->
+<section class="hero-about">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-4 text-center">
+                <div class="author-avatar">
+                    <i class="bi bi-person-fill"></i>
                 </div>
-                <div class="card-body">
-                    <div class="text-center mb-4">
-                        <i class="bi bi-person-circle" style="font-size: 5rem; color: #6c757d;"></i>
+                <h3 class="mt-3" th:text="${authorName}">Владислав Кондратьев</h3>
+                <p class="text-light mb-0" th:text="${authorInfo}">Разработчик информационных систем</p>
+            </div>
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-3">Об авторе проекта</h1>
+                <p class="lead mb-4" th:text="${projectDescription}">
+                    Информационно-справочная система для управления энергетическими объектами компании
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a th:href="'mailto:' + ${contactEmail}" class="btn btn-outline-light">
+                        <i class="bi bi-envelope me-2"></i>Написать автору
+                    </a>
+                    <a href="https://github.com/vkondratv" target="_blank" class="btn btn-light">
+                        <i class="bi bi-github me-2"></i>GitHub профиль
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Основной контент -->
+<main class="container py-5">
+    <div class="row">
+        <!-- Левая колонка - информация -->
+        <div class="col-lg-8">
+            <!-- Карточка с основной информацией -->
+            <div class="card shadow-sm mb-4 feature-card">
+                <div class="card-body p-4">
+                    <h3 class="card-title mb-4">
+                        <i class="bi bi-info-circle me-2 text-primary"></i>Подробная информация
+                    </h3>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Контактные данные</h5>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="bi bi-envelope me-2 text-primary"></i>
+                                    Email: <a th:href="'mailto:' + ${contactEmail}"
+                                              class="contact-link"
+                                              th:text="${contactEmail}">vkondratv@example.com</a>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="bi bi-geo-alt me-2 text-primary"></i>
+                                    Локация: Санкт-Петербург, Россия
+                                </li>
+                                <li>
+                                    <i class="bi bi-briefcase me-2 text-primary"></i>
+                                    Специализация: Backend-разработка
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Ключевые навыки</h5>
+                            <div class="d-flex flex-wrap mt-2">
+                                <span class="tech-badge">Java</span>
+                                <span class="tech-badge">Spring Boot</span>
+                                <span class="tech-badge">Spring Security</span>
+                                <span class="tech-badge">PostgreSQL</span>
+                                <span class="tech-badge">Docker</span>
+                                <span class="tech-badge">REST API</span>
+                            </div>
+                        </div>
                     </div>
 
+                    <h5>Опыт работы</h5>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <h6 class="fw-bold">Разработчик информационных систем</h6>
+                            <p class="text-muted small mb-1">2022 - настоящее время</p>
+                            <p class="mb-0">Разработка корпоративных систем для энергетического сектора</p>
+                        </div>
+                        <div class="timeline-item">
+                            <h6 class="fw-bold">Java-разработчик</h6>
+                            <p class="text-muted small mb-1">2020 - 2022</p>
+                            <p class="mb-0">Разработка микросервисных архитектур</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Технологии проекта -->
+            <div class="card shadow-sm mb-4 feature-card">
+                <div class="card-body p-4">
+                    <h3 class="card-title mb-4">
+                        <i class="bi bi-cpu me-2 text-primary"></i>Используемые технологии
+                    </h3>
+                    <p class="mb-4">Проект разработан с использованием современных технологий и фреймворков:</p>
                     <div class="row">
-                        <div class="col-md-6">
-                            <h4>Информация об авторе</h4>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item">
-                                    <strong>ФИО:</strong>
-                                    <span th:text="${authorName}">Иванов Иван Иванович</span>
-                                </li>
-                                <li class="list-group-item">
-                                    <strong>Должность:</strong>
-                                    <span th:text="${authorInfo}">Разработчик информационных систем</span>
-                                </li>
-                                <li class="list-group-item">
-                                    <strong>Email:</strong>
-                                    <a th:href="'mailto:' + ${contactEmail}"
-                                       th:text="${contactEmail}">author@example.com</a>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div class="col-md-6">
-                            <h4>О проекте</h4>
-                            <p>
-                                Информационно-справочная система для энергетической компании
-                                разработана с использованием современных технологий:
-                            </p>
-                            <ul>
-                                <li>Spring Boot 2.7+</li>
-                                <li>Spring Security для аутентификации и авторизации</li>
-                                <li>Spring Data JPA для работы с базой данных</li>
-                                <li>Thymeleaf для отображения представлений</li>
-                                <li>Bootstrap 5 для адаптивного дизайна</li>
-                            </ul>
-                            <p>
-                                Система обеспечивает безопасное хранение и управление данными
-                                энергетических объектов с разграничением прав доступа.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="mt-4">
-                        <h5>Функциональные возможности:</h5>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="card text-center h-100">
-                                    <div class="card-body">
-                                        <i class="bi bi-shield-lock" style="font-size: 2rem;"></i>
-                                        <h6 class="card-title mt-2">Безопасность</h6>
-                                        <p class="card-text small">Надежная система регистрации и авторизации</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="card text-center h-100">
-                                    <div class="card-body">
-                                        <i class="bi bi-table" style="font-size: 2rem;"></i>
-                                        <h6 class="card-title mt-2">Управление данными</h6>
-                                        <p class="card-text small">CRUD операции с энергообъектами</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="card text-center h-100">
-                                    <div class="card-body">
-                                        <i class="bi bi-bar-chart" style="font-size: 2rem;"></i>
-                                        <h6 class="card-title mt-2">Аналитика</h6>
-                                        <p class="card-text small">Статистика и отчетность</p>
-                                    </div>
-                                </div>
+                        <div th:each="tech, stat : ${technologies}" class="col-md-4 mb-3">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                <span th:text="${tech}">Spring Boot</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Правая колонка - статистика и возможности -->
+        <div class="col-lg-4">
+            <!-- Статистика -->
+            <div class="card shadow-sm mb-4 feature-card">
+                <div class="card-body p-4 text-center">
+                    <h4 class="card-title mb-4">
+                        <i class="bi bi-graph-up me-2 text-primary"></i>Статистика проекта
+                    </h4>
+                    <div class="row">
+                        <div class="col-6 mb-4">
+                            <div class="stats-counter">10K+</div>
+                            <small class="text-muted">Строк кода</small>
+                        </div>
+                        <div class="col-6 mb-4">
+                            <div class="stats-counter">15+</div>
+                            <small class="text-muted">Модулей</small>
+                        </div>
+                        <div class="col-6">
+                            <div class="stats-counter">99%</div>
+                            <small class="text-muted">Надежность</small>
+                        </div>
+                        <div class="col-6">
+                            <div class="stats-counter">24/7</div>
+                            <small class="text-muted">Доступность</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Возможности системы -->
+            <div class="card shadow-sm mb-4 feature-card">
+                <div class="card-body p-4">
+                    <h4 class="card-title mb-4">
+                        <i class="bi bi-lightning-charge me-2 text-primary"></i>Возможности системы
+                    </h4>
+                    <div class="mb-3">
+                        <i class="bi bi-shield-check feature-icon"></i>
+                        <h6>Безопасность</h6>
+                        <p class="small text-muted">Многоуровневая система аутентификации и авторизации</p>
+                    </div>
+                    <div class="mb-3">
+                        <i class="bi bi-database feature-icon"></i>
+                        <h6>Управление данными</h6>
+                        <p class="small text-muted">Полный CRUD функционал для энергообъектов</p>
+                    </div>
+                    <div>
+                        <i class="bi bi-bar-chart feature-icon"></i>
+                        <h6>Аналитика</h6>
+                        <p class="small text-muted">Детальная статистика и визуализация данных</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Быстрые ссылки -->
+            <div class="card shadow-sm feature-card">
+                <div class="card-body p-4">
+                    <h4 class="card-title mb-4">
+                        <i class="bi bi-link-45deg me-2 text-primary"></i>Быстрые ссылки
+                    </h4>
+                    <div class="list-group list-group-flush">
+                        <a href="/energy-objects" class="list-group-item list-group-item-action border-0 py-3">
+                            <i class="bi bi-lightbulb me-2 text-primary"></i>
+                            Энергообъекты
+                        </a>
+                        <a href="/energy-objects/statistics" class="list-group-item list-group-item-action border-0 py-3">
+                            <i class="bi bi-bar-chart me-2 text-primary"></i>
+                            Статистика
+                        </a>
+                        <a href="https://github.com/vkondratv/energy-company-v1-new"
+                           target="_blank"
+                           class="list-group-item list-group-item-action border-0 py-3">
+                            <i class="bi bi-github me-2 text-primary"></i>
+                            Исходный код
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
+</main>
+
+<!-- Футер -->
+<footer class="bg-dark text-white py-4 mt-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h5><i class="bi bi-lightning-charge me-2"></i>ЭнергоКомпания</h5>
+                <p class="text-light small mb-0">
+                    Информационно-справочная система для управления энергетическими объектами
+                </p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <p class="mb-1">© 2024 Все права защищены</p>
+                <p class="text-light small mb-0">
+                    Разработано <span th:text="${authorName}">Владиславом Кондратьевым</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Скрипты -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Анимация счетчиков статистики
+    document.addEventListener('DOMContentLoaded', function() {
+        const counters = document.querySelectorAll('.stats-counter');
+        counters.forEach(counter => {
+            const target = parseInt(counter.innerText);
+            let current = 0;
+            const increment = target / 50;
+
+            const updateCounter = () => {
+                if (current < target) {
+                    current += increment;
+                    counter.innerText = Math.ceil(current) + (counter.innerText.includes('+') ? '+' :
+                                                              counter.innerText.includes('%') ? '%' : '');
+                    setTimeout(updateCounter, 30);
+                }
+            };
+
+            updateCounter();
+        });
+    });
+</script>
 </body>
 </html>
