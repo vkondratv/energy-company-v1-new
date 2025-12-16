@@ -69,6 +69,7 @@ public class SecurityConfig {
                         .maxSessionsPreventsLogin(false)
                 );
 
+
         return http.build();
     }
 }

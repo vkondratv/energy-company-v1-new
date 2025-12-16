@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>Управление пользователями - Админ панель</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        .admin-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 0;
+            margin-bottom: 30px;
+        }
+        .role-badge {
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin: 2px;
+        }
+        .role-user { background-color: #e3f2fd; color: #1976d2; }
+        .role-moderator { background-color: #fff3e0; color: #f57c00; }
+        .role-admin { background-color: #fce4ec; color: #c2185b; }
+    </style>
+</head>
+<body>
+<!-- Навигация -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">
+            <i class="bi bi-lightning-charge-fill me-2"></i>
+            <span>ЭнергоКомпания</span>
+            <small class="ms-2 text-warning">Админ</small>
+        </a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link" th:href="@{/energy-objects}"><i class="bi bi-lightbulb me-1"></i>Энергообъекты</a>
+            <a class="nav-link active" th:href="@{/admin/users}"><i class="bi bi-people me-1"></i>Пользователи</a>
+            <a class="nav-link" th:href="@{/}"><i class="bi bi-house me-1"></i>Главная</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Заголовок -->
+<div class="admin-header">
+    <div class="container">
+        <h1><i class="bi bi-shield-lock me-2"></i>Управление пользователями</h1>
+        <p class="lead mb-0">Изменение ролей и управление доступом пользователей</p>
+    </div>
+</div>
+
+<!-- Сообщения -->
+<div class="container">
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show">
+        <i class="bi bi-check-circle me-2"></i>
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Таблица пользователей -->
+    <div class="card shadow">
+        <div class="card-header bg-white">
+            <h5 class="mb-0"><i class="bi bi-people-fill me-2"></i>Список пользователей</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Имя пользователя</th>
+                        <th>Email</th>
+                        <th>Имя</th>
+                        <th>Фамилия</th>
+                        <th>Роли</th>
+                        <th>Дата регистрации</th>
+                        <th>Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="user : ${users}">
+                        <td th:text="${user.id}">1</td>
+                        <td>
+                            <strong th:text="${user.username}">user1</strong>
+                            <div th:if="${#authentication.name == user.username}" class="badge bg-info">Вы</div>
+                        </td>
+                        <td th:text="${user.email}">user@example.com</td>
+                        <td th:text="${user.firstName}">-</td>
+                        <td th:text="${user.lastName}">-</td>
+                        <td>
+                            <div th:each="role : ${user.roles}">
+                                    <span th:switch="${role.name.name()}" class="role-badge">
+                                        <span th:case="'ROLE_USER'" class="role-user">Пользователь</span>
+                                        <span th:case="'ROLE_MODERATOR'" class="role-moderator">Модератор</span>
+                                        <span th:case="'ROLE_ADMIN'" class="role-admin">Администратор</span>
+                                    </span>
+                            </div>
+                        </td>
+                        <td>
+                            <small th:text="${#temporals.format(user.createdAt, 'dd.MM.yyyy HH:mm')}">
+                                01.01.2024
+                            </small>
+                        </td>
+                        <td>
+                            <a th:href="@{/admin/users/edit/{id}(id=${user.id})}"
+                               class="btn btn-sm btn-outline-primary me-2">
+                                <i class="bi bi-pencil"></i> Изменить роли
+                            </a>
+                            <a th:href="@{/admin/users/delete/{id}(id=${user.id})}"
+                               class="btn btn-sm btn-outline-danger"
+                               th:unless="${#authentication.name == user.username}"
+                               onclick="return confirm('Удалить пользователя?')">
+                                <i class="bi bi-trash"></i> Удалить
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Футер -->
+<footer class="bg-dark text-white py-4 mt-5">
+    <div class="container text-center">
+        <p class="mb-0">© 2024 ЭнергоКомпания. Административная панель.</p>
+        <small>Доступно только для пользователей с ролью ADMIN</small>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

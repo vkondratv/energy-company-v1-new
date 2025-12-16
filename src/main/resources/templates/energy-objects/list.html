@@ -236,6 +236,11 @@
                         <i class="bi bi-bar-chart"></i> Статистика
                     </a>
                 </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" th:href="@{/admin/users}">
+                        <i class="bi bi-shield-lock"></i> Управление пользователями
+                    </a>
+                </li>
             </ul>
 
             <div class="navbar-nav">

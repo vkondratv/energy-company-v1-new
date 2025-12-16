@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Изменение ролей - Админ панель</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">
+            <i class="bi bi-lightning-charge-fill me-2"></i>
+            <span>ЭнергоКомпания</span>
+            <small class="ms-2 text-warning">Админ</small>
+        </a>
+        <div class="navbar-nav">
+            <a class="nav-link" th:href="@{/admin/users}"><i class="bi bi-arrow-left me-1"></i>Назад к списку</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <!-- Форма изменения ролей -->
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="bi bi-person-gear me-2"></i>Изменение ролей пользователя</h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h5>Пользователь: <span th:text="${user.username}" class="text-primary"></span></h5>
+                        <p class="text-muted mb-1">Email: <span th:text="${user.email}"></span></p>
+                        <p class="text-muted">Зарегистрирован:
+                            <span th:text="${#temporals.format(user.createdAt, 'dd.MM.yyyy')}"></span>
+                        </p>
+                    </div>
+
+                    <form th:action="@{/admin/users/update-roles/{id}(id=${user.id})}" method="post">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Выберите роли:</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="roles" value="user"
+                                       id="roleUser" th:checked="${user.roles.?[name.name() == 'ROLE_USER'].size() > 0}">
+                                <label class="form-check-label" for="roleUser">
+                                    <span class="badge bg-primary">Пользователь (USER)</span>
+                                    <small class="text-muted d-block">Базовый доступ к системе</small>
+                                </label>
+                            </div>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" name="roles" value="moderator"
+                                       id="roleMod" th:checked="${user.roles.?[name.name() == 'ROLE_MODERATOR'].size() > 0}">
+                                <label class="form-check-label" for="roleMod">
+                                    <span class="badge bg-warning">Модератор (MODERATOR)</span>
+                                    <small class="text-muted d-block">Может редактировать энергообъекты</small>
+                                </label>
+                            </div>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" name="roles" value="admin"
+                                       id="roleAdmin" th:checked="${user.roles.?[name.name() == 'ROLE_ADMIN'].size() > 0}">
+                                <label class="form-check-label" for="roleAdmin">
+                                    <span class="badge bg-danger">Администратор (ADMIN)</span>
+                                    <small class="text-muted d-block">Полный доступ ко всем функциям</small>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Предупреждение для админа -->
+                        <div class="alert alert-warning" th:if="${#authentication.name == user.username}">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            <strong>Внимание!</strong> Вы изменяете роли для себя.
+                            Если уберете роль ADMIN, потеряете доступ к этой панели.
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a th:href="@{/admin/users}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle me-1"></i>Отмена
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle me-1"></i>Сохранить изменения
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Информация о ролях -->
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h6><i class="bi bi-info-circle me-2"></i>Описание ролей:</h6>
+                    <ul class="mb-0 small">
+                        <li><strong>USER:</strong> Просмотр энергообъектов, статистики, экспорт данных</li>
+                        <li><strong>MODERATOR:</strong> Все возможности USER + создание/редактирование/удаление энергообъектов</li>
+                        <li><strong>ADMIN:</strong> Все возможности MODERATOR + управление пользователями</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
