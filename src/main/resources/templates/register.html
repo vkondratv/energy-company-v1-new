@@ -72,30 +72,6 @@
                 <input type="password" class="form-control" id="confirmPassword"
                        name="confirmPassword" required>
             </div>
-
-            <!-- Выбор ролей (для админа) -->
-            <div class="mb-4" th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
-                <label class="form-label">Роли пользователя</label>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="roles" value="user" id="roleUser" checked>
-                    <label class="form-check-label" for="roleUser">
-                        Пользователь (обычный доступ)
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="roles" value="mod" id="roleMod">
-                    <label class="form-check-label" for="roleMod">
-                        Модератор (может редактировать объекты)
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="roles" value="admin" id="roleAdmin">
-                    <label class="form-check-label" for="roleAdmin">
-                        Администратор (полный доступ)
-                    </label>
-                </div>
-            </div>
-
             <div class="d-grid gap-2">
                 <button type="submit" class="btn btn-primary">
                     <i class="bi bi-person-plus"></i> Зарегистрироваться
