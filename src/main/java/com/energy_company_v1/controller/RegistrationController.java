@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,6 +22,21 @@ public class RegistrationController {
         this.userService = userService;
     }
 
+    @GetMapping("/register-form")
+    public String showRegisterForm(@RequestParam(value = "error", required = false) String error,
+                                   @RequestParam(value = "success", required = false) String success,
+                                   Model model) {
+
+        if (error != null) {
+            model.addAttribute("errorMessage", error);
+        }
+        if (success != null) {
+            model.addAttribute("successMessage", success);
+        }
+
+        return "register";
+    }
+
     @PostMapping("/register")
     public String registerUser(@RequestParam String username,
                                @RequestParam String email,
@@ -27,18 +45,22 @@ public class RegistrationController {
                                @RequestParam(required = false) Set<String> roles,
                                Model model) {
 
+        String errorMessage = null;
+
         // Валидация
         if (username == null || username.trim().isEmpty()) {
-            return "redirect:/register?error=Имя пользователя обязательно";
+            errorMessage = "Имя пользователя обязательно";
+        } else if (email == null || email.trim().isEmpty()) {
+            errorMessage = "Email обязателен";
+        } else if (password == null || password.length() < 6) {
+            errorMessage = "Пароль должен содержать минимум 6 символов";
+        } else if (!password.equals(confirmPassword)) {
+            errorMessage = "Пароли не совпадают";
         }
-        if (email == null || email.trim().isEmpty()) {
-            return "redirect:/register?error=Email обязателен";
-        }
-        if (password == null || password.length() < 6) {
-            return "redirect:/register?error=Пароль должен содержать минимум 6 символов";
-        }
-        if (!password.equals(confirmPassword)) {
-            return "redirect:/register?error=Пароли не совпадают";
+
+        if (errorMessage != null) {
+            model.addAttribute("errorMessage", errorMessage);
+            return "register";
         }
 
         try {
@@ -48,10 +70,17 @@ public class RegistrationController {
             }
 
             userService.registerUser(username, email, password, roles);
-            return "redirect:/login?success=Регистрация успешна! Теперь вы можете войти.";
+
+            // Используем английское сообщение или кодируем русское
+            String encodedSuccess = URLEncoder.encode("Registration successful! You can now log in.",
+                    StandardCharsets.UTF_8);
+            return "redirect:/login?success=registration_success";
 
         } catch (RuntimeException e) {
-            return "redirect:/register?error=" + e.getMessage();
+            // Кодируем сообщение об ошибке
+            String encodedError = URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8);
+            model.addAttribute("errorMessage", e.getMessage());
+            return "register";
         }
     }
 }

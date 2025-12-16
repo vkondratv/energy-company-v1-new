@@ -6,6 +6,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+
 @Controller
 public class MainController {
 
@@ -30,13 +33,20 @@ public class MainController {
                         Model model) {
 
         if (error != null) {
-            model.addAttribute("errorMessage", "Неверное имя пользователя или пароль");
+            String decodedError = URLDecoder.decode(error, StandardCharsets.UTF_8);
+            model.addAttribute("errorMessage", decodedError);
         }
         if (logout != null) {
             model.addAttribute("successMessage", "Вы успешно вышли из системы");
         }
         if (success != null) {
-            model.addAttribute("successMessage", success);
+            String decodedSuccess = URLDecoder.decode(success, StandardCharsets.UTF_8);
+            // Изменяем здесь:
+            if ("registration_success".equals(success)) {
+                model.addAttribute("successMessage", "Регистрация успешна!");
+            } else {
+                model.addAttribute("successMessage", decodedSuccess);
+            }
         }
 
         return "login";
@@ -48,38 +58,47 @@ public class MainController {
                            Model model) {
 
         if (error != null) {
-            model.addAttribute("errorMessage", error);
+            // Декодируем параметр, если он закодирован
+            String decodedError = URLDecoder.decode(error, StandardCharsets.UTF_8);
+            model.addAttribute("errorMessage", decodedError);
         }
         if (success != null) {
-            model.addAttribute("successMessage", success);
+            // Декодируем параметр, если он закодирован
+            String decodedSuccess = URLDecoder.decode(success, StandardCharsets.UTF_8);
+            model.addAttribute("successMessage", decodedSuccess);
+        }
+        if ("registration_success".equals(success)) {
+            model.addAttribute("successMessage", "Регистрация успешна! Теперь вы можете войти.");
         }
 
         return "register";
     }
 
-
     @GetMapping("/about")
     public String aboutPage(Model model) {
-            // Данные об авторе
-        model.addAttribute("authorName", "Владислав Кондратьев");
-        model.addAttribute("authorInfo", "Разработчик информационных систем");
-        model.addAttribute("contactEmail", "vkondratv@example.com");
-        model.addAttribute("projectDescription",
-                    "Информационно-справочная система для управления энергетическими объектами компании");
+        // Данные об авторе
+        model.addAttribute("authorName", "Кондратюк Владислав Викторович");
+        model.addAttribute("authorInfo", "Студент-разработчик");
+        model.addAttribute("contactEmail", "superioriteee@yandex.ru");
+        model.addAttribute("educationalInstitution", "Финансовый университет при Правительстве РФ");
+        model.addAttribute("group", "ДПИ23-1, Прикладная информатика");
+        model.addAttribute("location", "Сургут, Россия");
+        model.addAttribute("projectStartDate", "25.10.2025");
+        model.addAttribute("projectEndDate", "18.12.2025");
+        model.addAttribute("projectDuration", "~2 месяца");
 
-            // Технологии
+        // Технологии
         model.addAttribute("technologies", new String[] {
-                    "Spring Boot 3.1+",
-                    "Spring Security 6+",
-                    "Spring Data JPA",
-                    "Thymeleaf",
-                    "Bootstrap 5",
-                    "PostgreSQL/MySQL"
+                "Spring Boot",
+                "Spring Security",
+                "Spring Data JPA",
+                "Thymeleaf",
+                "Bootstrap 5",
+                "PostgreSQL"
         });
 
-        return "about"; // Возвращает шаблон about.html
+        return "about";
     }
-
 
     @GetMapping("/access-denied")
     public String accessDenied(Model model) {

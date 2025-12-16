@@ -313,7 +313,6 @@
                         </div>
                         <div class="col-md-3">
                             <select name="sortBy" class="form-select search-box">
-                                <option value="id" th:selected="${sortBy == 'id'}">Сортировка по ID</option>
                                 <option value="name" th:selected="${sortBy == 'name'}">По названию</option>
                                 <option value="power" th:selected="${sortBy == 'power'}">По мощности</option>
                                 <option value="efficiency" th:selected="${sortBy == 'efficiency'}">По КПД</option>
@@ -585,23 +584,6 @@
         <div class="col-md-4 mb-4">
             <div class="card h-100 border-0 shadow-sm">
                 <div class="card-body text-center p-4">
-                    <i class="bi bi-download display-4 text-success mb-3"></i>
-                    <h5>Экспорт данных</h5>
-                    <p class="text-muted">Экспортируйте данные в различных форматах</p>
-                    <!-- Кнопка активна для USER, MODERATOR, ADMIN -->
-                    <button class="btn btn-outline-success mt-2"
-                            id="exportBtn"
-                            sec:authorize="hasAnyRole('USER', 'MODERATOR', 'ADMIN')"
-                            onclick="exportData()">
-                        <i class="bi bi-file-earmark-excel"></i> Экспорт
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 border-0 shadow-sm">
-                <div class="card-body text-center p-4">
                     <i class="bi bi-bar-chart display-4 text-info mb-3"></i>
                     <h5>Статистика</h5>
                     <p class="text-muted">Аналитика и отчетность по объектам</p>
@@ -633,35 +615,8 @@
                     <li><a th:href="@{/about}" class="text-white-50 text-decoration-none">Об авторе</a></li>
                 </ul>
             </div>
-            <div class="col-lg-3 col-md-6 mb-4">
-                <h6 class="mb-3">Система</h6>
-                <ul class="list-unstyled">
-                    <li>
-            <span class="text-white-50">
-                <i class="bi bi-database me-1"></i>
-                Объектов: <span th:text="${energyObjects.totalElements}">0</span>
-            </span>
-                    </li>
-                    <li>
-            <span class="text-white-50">
-                <i class="bi bi-person me-1"></i>
-                Пользователей: <span th:text="${userCount}">0</span>
-            </span>
-                    </li>
-                    <li>
-            <span class="text-white-50">
-                <i class="bi bi-lightning-charge me-1"></i>
-                Активных: <span th:text="${activeObjectsCount}">0</span>
-            </span>
-                    </li>
-                    <li>
-            <span class="text-white-50">
-                <i class="bi bi-cpu me-1"></i>
-                Мощность: <span th:text="${#numbers.formatDecimal(totalActivePower, 1, 2)}">0</span> МВт
-            </span>
-                    </li>
-                </ul>
-            </div>
+
+
             <div class="col-lg-3 mb-4">
                 <h6 class="mb-3">Технологии</h6>
                 <div class="d-flex flex-wrap">
@@ -675,10 +630,10 @@
         <hr class="my-4 bg-white-50">
         <div class="row">
             <div class="col-md-6">
-                <p class="mb-0">© 2024 ЭнергоКомпания. Все права защищены.</p>
+                <p class="mb-0">© 2025 ЭнергоКомпания. Все права защищены.</p>
             </div>
             <div class="col-md-6 text-md-end">
-                <p class="mb-0">Курсовой проект по CoBP Технологии программирования</p>
+                <p class="mb-0">Курсовой проект</p>
             </div>
         </div>
     </div>

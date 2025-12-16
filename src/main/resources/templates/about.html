@@ -22,8 +22,8 @@
         .hero-about {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             color: white;
-            padding: 80px 0 50px;
-            margin-bottom: 40px;
+            padding: 50px 0 30px;
+            margin-bottom: 30px;
             position: relative;
             overflow: hidden;
         }
@@ -33,69 +33,124 @@
             position: absolute;
             top: -50%;
             right: -20%;
-            width: 400px;
-            height: 400px;
+            width: 250px;
+            height: 250px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 50%;
         }
 
         .author-avatar {
-            width: 180px;
-            height: 180px;
+            width: 120px;
+            height: 120px;
             background: linear-gradient(135deg, var(--accent-color) 0%, #7209b7 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 25px;
-            border: 5px solid white;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin: 0 auto 15px;
+            border: 3px solid white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
         }
 
         .author-avatar i {
-            font-size: 80px;
+            font-size: 50px;
             color: white;
         }
 
-        .feature-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: none;
-            border-radius: 15px;
-            overflow: hidden;
-            height: 100%;
+        .info-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
         }
 
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-        }
-
-        .feature-icon {
-            font-size: 2.5rem;
-            color: var(--primary-color);
+        .info-item {
             margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f1f3f4;
         }
 
-        .tech-badge {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 8px 18px;
-            border-radius: 50px;
-            margin: 5px;
-            display: inline-block;
+        .info-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-label i {
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+
+        .info-value {
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .tech-list {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 0;
+        }
+
+        .tech-list li {
+            padding: 5px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .tech-list i {
+            color: #28a745;
+            margin-right: 8px;
             font-size: 0.9rem;
-            transition: all 0.3s ease;
         }
 
-        .tech-badge:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        .project-dates {
+            display: flex;
+            justify-content: space-between;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .date-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .date-label {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+
+        .date-value {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+            font-size: 1.25rem;
         }
 
         .contact-link {
             color: var(--primary-color);
             text-decoration: none;
-            font-weight: 500;
             transition: color 0.3s ease;
         }
 
@@ -104,52 +159,13 @@
             text-decoration: underline;
         }
 
-        .timeline {
-            position: relative;
-            padding-left: 30px;
-            margin: 30px 0;
-        }
-
-        .timeline::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 3px;
-            background: linear-gradient(to bottom, var(--primary-color), var(--accent-color));
-        }
-
-        .timeline-item {
-            position: relative;
-            margin-bottom: 25px;
-        }
-
-        .timeline-item::before {
-            content: "";
-            position: absolute;
-            left: -36px;
-            top: 5px;
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            border: 3px solid white;
-            box-shadow: 0 0 0 3px var(--primary-color);
-        }
-
-        .stats-counter {
-            font-size: 2.5rem;
-            font-weight: bold;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .back-button {
+            margin-top: 30px;
         }
     </style>
 </head>
 <body>
-<!-- Навигация (как в layout.html) -->
+<!-- Навигация -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
     <div class="container">
         <a class="navbar-brand" href="/">
@@ -164,210 +180,200 @@
     </div>
 </nav>
 
-<!-- Герой-секция -->
-<section class="hero-about">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-4 text-center">
-                <div class="author-avatar">
-                    <i class="bi bi-person-fill"></i>
-                </div>
-                <h3 class="mt-3" th:text="${authorName}">Владислав Кондратьев</h3>
-                <p class="text-light mb-0" th:text="${authorInfo}">Разработчик информационных систем</p>
-            </div>
-            <div class="col-lg-8">
-                <h1 class="display-4 fw-bold mb-3">Об авторе проекта</h1>
-                <p class="lead mb-4" th:text="${projectDescription}">
-                    Информационно-справочная система для управления энергетическими объектами компании
-                </p>
-                <div class="d-flex flex-wrap gap-3">
-                    <a th:href="'mailto:' + ${contactEmail}" class="btn btn-outline-light">
-                        <i class="bi bi-envelope me-2"></i>Написать автору
-                    </a>
-                    <a href="https://github.com/vkondratv" target="_blank" class="btn btn-light">
-                        <i class="bi bi-github me-2"></i>GitHub профиль
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
 <!-- Основной контент -->
-<main class="container py-5">
-    <div class="row">
-        <!-- Левая колонка - информация -->
-        <div class="col-lg-8">
-            <!-- Карточка с основной информацией -->
-            <div class="card shadow-sm mb-4 feature-card">
-                <div class="card-body p-4">
-                    <h3 class="card-title mb-4">
-                        <i class="bi bi-info-circle me-2 text-primary"></i>Подробная информация
-                    </h3>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Заголовок -->
+            <div class="text-center mb-4">
+                <h1 class="fw-bold mb-3">
+                    <i class="bi bi-person-badge text-primary me-2"></i>
+                    Информация об авторе проекта
+                </h1>
+                <p class="text-muted">Сведения о разработчике системы управления энергообъектами</p>
+            </div>
 
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <h5>Контактные данные</h5>
-                            <ul class="list-unstyled">
-                                <li class="mb-2">
-                                    <i class="bi bi-envelope me-2 text-primary"></i>
-                                    Email: <a th:href="'mailto:' + ${contactEmail}"
-                                              class="contact-link"
-                                              th:text="${contactEmail}">vkondratv@example.com</a>
-                                </li>
-                                <li class="mb-2">
-                                    <i class="bi bi-geo-alt me-2 text-primary"></i>
-                                    Локация: Санкт-Петербург, Россия
-                                </li>
-                                <li>
-                                    <i class="bi bi-briefcase me-2 text-primary"></i>
-                                    Специализация: Backend-разработка
-                                </li>
+            <!-- Основная информация -->
+            <div class="row">
+                <!-- Левая колонка - личная информация -->
+                <div class="col-md-6">
+                    <div class="info-card">
+                        <div class="text-center mb-3">
+                            <div class="author-avatar">
+                                <i class="bi bi-person-fill"></i>
+                            </div>
+                            <h4 class="mb-1">Кондратюк Владислав Викторович</h4>
+                            <p class="text-muted small">Студент-разработчик</p>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="bi bi-mortarboard"></i>Учебное заведение
+                            </div>
+                            <div class="info-value">
+                                Финансовый университет при Правительстве РФ
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="bi bi-people"></i>Группа/Факультет
+                            </div>
+                            <div class="info-value">
+                                ДПИ23-1, Прикладная информатика
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="bi bi-envelope"></i>Контактные данные
+                            </div>
+                            <div class="info-value">
+                                <div class="mb-1">
+                                    <i class="bi bi-envelope me-1"></i>
+                                    Email: superioriteee@yandex.ru
+                                </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="bi bi-geo-alt"></i>Местоположение
+                            </div>
+                            <div class="info-value">
+                                Сургут, Россия
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Даты работы над проектом -->
+                    <div class="info-card">
+                        <h5 class="section-title">Сроки разработки проекта</h5>
+                        <div class="project-dates">
+                            <div class="date-item">
+                                <div class="date-label">Начало работ</div>
+                                <div class="date-value">25.10.2025</div>
+                            </div>
+                            <div class="date-item">
+                                <div class="date-label">Завершение работ</div>
+                                <div class="date-value">18.12.2025</div>
+                            </div>
+                        </div>
+                        <p class="text-muted small mt-3 mb-0">
+                            Общая продолжительность разработки: ~2 месяца
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Правая колонка - технологии проекта -->
+                <div class="col-md-6">
+                    <!-- Технологии проекта -->
+                    <div class="info-card">
+                        <h5 class="section-title">
+                            <i class="bi bi-cpu me-2"></i>Технологии, использованные в проекте
+                        </h5>
+                        <div class="info-value">
+                            <p class="mb-3">Проект разработан с использованием современных технологий:</p>
+                            <div class="row">
+                                <div class="col-6 mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-check-square text-primary me-2"></i>
+                                        <span>Spring Boot</span>
+                                    </div>
+                                </div>
+                                <div class="col-6 mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-check-square text-primary me-2"></i>
+                                        <span>Spring Security</span>
+                                    </div>
+                                </div>
+                                <div class="col-6 mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-check-square text-primary me-2"></i>
+                                        <span>Spring Data JPA</span>
+                                    </div>
+                                </div>
+                                <div class="col-6 mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-check-square text-primary me-2"></i>
+                                        <span>Thymeleaf</span>
+                                    </div>
+                                </div>
+                                <div class="col-6 mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-check-square text-primary me-2"></i>
+                                        <span>Bootstrap 5</span>
+                                    </div>
+                                </div>
+                                <div class="col-6 mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-check-square text-primary me-2"></i>
+                                        <span>PostgreSQL</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Описание проекта -->
+                    <div class="info-card">
+                        <h5 class="section-title">
+                            <i class="bi bi-info-circle me-2"></i>О проекте
+                        </h5>
+                        <div class="info-value">
+                            <p>Система управления энергообъектами - это веб-приложение для учета и контроля энергетических объектов различных типов (АЭС, ГЭС, ТЭС, ТЭЦ, СЭС, ВЭС).</p>
+                            <p>Основные возможности системы:</p>
+                            <ul class="tech-list">
+                                <li><i class="bi bi-check-circle text-success"></i>Управление энергообъектами (CRUD операции)</li>
+                                <li><i class="bi bi-check-circle text-success"></i>Фильтрация и поиск объектов</li>
+                                <li><i class="bi bi-check-circle text-success"></i>Статистика и аналитика</li>
+                                <li><i class="bi bi-check-circle text-success"></i>Безопасная авторизация пользователей</li>
+                                <li><i class="bi bi-check-circle text-success"></i>Адаптивный пользовательский интерфейс</li>
                             </ul>
                         </div>
-                        <div class="col-md-6">
-                            <h5>Ключевые навыки</h5>
-                            <div class="d-flex flex-wrap mt-2">
-                                <span class="tech-badge">Java</span>
-                                <span class="tech-badge">Spring Boot</span>
-                                <span class="tech-badge">Spring Security</span>
-                                <span class="tech-badge">PostgreSQL</span>
-                                <span class="tech-badge">Docker</span>
-                                <span class="tech-badge">REST API</span>
-                            </div>
-                        </div>
                     </div>
 
-                    <h5>Опыт работы</h5>
-                    <div class="timeline">
-                        <div class="timeline-item">
-                            <h6 class="fw-bold">Разработчик информационных систем</h6>
-                            <p class="text-muted small mb-1">2022 - настоящее время</p>
-                            <p class="mb-0">Разработка корпоративных систем для энергетического сектора</p>
-                        </div>
-                        <div class="timeline-item">
-                            <h6 class="fw-bold">Java-разработчик</h6>
-                            <p class="text-muted small mb-1">2020 - 2022</p>
-                            <p class="mb-0">Разработка микросервисных архитектур</p>
+                    <!-- Дополнительная информация -->
+                    <div class="info-card">
+                        <h5 class="section-title">
+                            <i class="bi bi-lightning-charge me-2"></i>Цели проекта
+                        </h5>
+                        <div class="info-value">
+                            <p>Разработка учебного проекта для демонстрации навыков работы с современными веб-технологиями и фреймворками.</p>
+                            <p>Проект реализован в рамках учебной программы для получения практического опыта разработки полнофункционального веб-приложения.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Технологии проекта -->
-            <div class="card shadow-sm mb-4 feature-card">
-                <div class="card-body p-4">
-                    <h3 class="card-title mb-4">
-                        <i class="bi bi-cpu me-2 text-primary"></i>Используемые технологии
-                    </h3>
-                    <p class="mb-4">Проект разработан с использованием современных технологий и фреймворков:</p>
-                    <div class="row">
-                        <div th:each="tech, stat : ${technologies}" class="col-md-4 mb-3">
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-check-circle-fill text-success me-2"></i>
-                                <span th:text="${tech}">Spring Boot</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Правая колонка - статистика и возможности -->
-        <div class="col-lg-4">
-            <!-- Статистика -->
-            <div class="card shadow-sm mb-4 feature-card">
-                <div class="card-body p-4 text-center">
-                    <h4 class="card-title mb-4">
-                        <i class="bi bi-graph-up me-2 text-primary"></i>Статистика проекта
-                    </h4>
-                    <div class="row">
-                        <div class="col-6 mb-4">
-                            <div class="stats-counter">10K+</div>
-                            <small class="text-muted">Строк кода</small>
-                        </div>
-                        <div class="col-6 mb-4">
-                            <div class="stats-counter">15+</div>
-                            <small class="text-muted">Модулей</small>
-                        </div>
-                        <div class="col-6">
-                            <div class="stats-counter">99%</div>
-                            <small class="text-muted">Надежность</small>
-                        </div>
-                        <div class="col-6">
-                            <div class="stats-counter">24/7</div>
-                            <small class="text-muted">Доступность</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Возможности системы -->
-            <div class="card shadow-sm mb-4 feature-card">
-                <div class="card-body p-4">
-                    <h4 class="card-title mb-4">
-                        <i class="bi bi-lightning-charge me-2 text-primary"></i>Возможности системы
-                    </h4>
-                    <div class="mb-3">
-                        <i class="bi bi-shield-check feature-icon"></i>
-                        <h6>Безопасность</h6>
-                        <p class="small text-muted">Многоуровневая система аутентификации и авторизации</p>
-                    </div>
-                    <div class="mb-3">
-                        <i class="bi bi-database feature-icon"></i>
-                        <h6>Управление данными</h6>
-                        <p class="small text-muted">Полный CRUD функционал для энергообъектов</p>
-                    </div>
-                    <div>
-                        <i class="bi bi-bar-chart feature-icon"></i>
-                        <h6>Аналитика</h6>
-                        <p class="small text-muted">Детальная статистика и визуализация данных</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Быстрые ссылки -->
-            <div class="card shadow-sm feature-card">
-                <div class="card-body p-4">
-                    <h4 class="card-title mb-4">
-                        <i class="bi bi-link-45deg me-2 text-primary"></i>Быстрые ссылки
-                    </h4>
-                    <div class="list-group list-group-flush">
-                        <a href="/energy-objects" class="list-group-item list-group-item-action border-0 py-3">
-                            <i class="bi bi-lightbulb me-2 text-primary"></i>
-                            Энергообъекты
-                        </a>
-                        <a href="/energy-objects/statistics" class="list-group-item list-group-item-action border-0 py-3">
-                            <i class="bi bi-bar-chart me-2 text-primary"></i>
-                            Статистика
-                        </a>
-                        <a href="https://github.com/vkondratv/energy-company-v1-new"
-                           target="_blank"
-                           class="list-group-item list-group-item-action border-0 py-3">
-                            <i class="bi bi-github me-2 text-primary"></i>
-                            Исходный код
-                        </a>
-                    </div>
-                </div>
+            <!-- Кнопка возврата -->
+            <div class="text-center back-button">
+                <a href="/" class="btn btn-outline-primary">
+                    <i class="bi bi-arrow-left me-2"></i>Вернуться на главную
+                </a>
+                <a href="/energy-objects" class="btn btn-primary ms-2">
+                    <i class="bi bi-lightbulb me-2"></i>Перейти к энергообъектам
+                </a>
             </div>
         </div>
     </div>
-</main>
+</div>
 
 <!-- Футер -->
-<footer class="bg-dark text-white py-4 mt-5">
+<footer class="bg-dark text-white py-3 mt-4">
     <div class="container">
-        <div class="row">
+        <div class="row align-items-center">
             <div class="col-md-6">
-                <h5><i class="bi bi-lightning-charge me-2"></i>ЭнергоКомпания</h5>
+                <h6 class="mb-1"><i class="bi bi-lightning-charge me-1"></i>ЭнергоКомпания</h6>
                 <p class="text-light small mb-0">
-                    Информационно-справочная система для управления энергетическими объектами
+                    Система управления энергетическими объектами
                 </p>
             </div>
             <div class="col-md-6 text-md-end">
-                <p class="mb-1">© 2024 Все права защищены</p>
+                <p class="mb-1 small">© 2025 Все права защищены</p>
                 <p class="text-light small mb-0">
-                    Разработано <span th:text="${authorName}">Владиславом Кондратьевым</span>
+                    Автор: Кондратюк Владислав Викторович
                 </p>
             </div>
         </div>
@@ -376,27 +382,5 @@
 
 <!-- Скрипты -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    // Анимация счетчиков статистики
-    document.addEventListener('DOMContentLoaded', function() {
-        const counters = document.querySelectorAll('.stats-counter');
-        counters.forEach(counter => {
-            const target = parseInt(counter.innerText);
-            let current = 0;
-            const increment = target / 50;
-
-            const updateCounter = () => {
-                if (current < target) {
-                    current += increment;
-                    counter.innerText = Math.ceil(current) + (counter.innerText.includes('+') ? '+' :
-                                                              counter.innerText.includes('%') ? '%' : '');
-                    setTimeout(updateCounter, 30);
-                }
-            };
-
-            updateCounter();
-        });
-    });
-</script>
 </body>
 </html>

@@ -280,48 +280,89 @@ public class EnergyObjectController {
     @PreAuthorize("hasAnyRole('USER', 'MODERATOR', 'ADMIN')")
     public String showStatistics(Model model) {
         try {
-            // Получаем расширенную статистику
-            Map<String, Object> statistics = energyObjectService.getStatistics();
+            // Получаем все объекты
+            List<EnergyObject> allObjects = energyObjectService.getAllEnergyObjects();
 
-            // Дополнительная статистика для нового дизайна
-            long totalObjects = energyObjectService.getAllEnergyObjects().size();
-            long activeObjects = energyObjectService.getAllEnergyObjects()
-                    .stream()
+            if (allObjects.isEmpty()) {
+                // Если нет объектов, возвращаем пустую статистику
+                model.addAttribute("errorMessage", "Нет данных для отображения статистики");
+                return "energy-objects/statistics";
+            }
+
+            long totalObjects = allObjects.size();
+            long activeObjects = allObjects.stream()
                     .filter(EnergyObject::getActive)
                     .count();
+            long inactiveObjects = totalObjects - activeObjects;
+
+            // Вычисляем проценты
+            double activePercentage = (totalObjects > 0) ?
+                    Math.round((activeObjects * 100.0 / totalObjects) * 10.0) / 10.0 : 0.0;
+            double inactivePercentage = (totalObjects > 0) ?
+                    Math.round((inactiveObjects * 100.0 / totalObjects) * 10.0) / 10.0 : 0.0;
 
             // Статистика по типам с процентами
-            Map<String, Long> typeCounts = energyObjectService.getAllEnergyObjects()
-                    .stream()
+            Map<String, Long> typeCounts = allObjects.stream()
                     .collect(Collectors.groupingBy(
                             EnergyObject::getType,
                             Collectors.counting()
                     ));
 
-            Map<String, Double> typePercentages = typeCounts.entrySet()
-                    .stream()
-                    .collect(Collectors.toMap(
-                            Map.Entry::getKey,
-                            entry -> totalObjects > 0 ?
-                                    (entry.getValue() * 100.0 / totalObjects) : 0
+            Map<String, Double> typePercentages = new HashMap<>();
+            for (Map.Entry<String, Long> entry : typeCounts.entrySet()) {
+                double percentage = Math.round((entry.getValue() * 100.0 / totalObjects) * 10.0) / 10.0;
+                typePercentages.put(entry.getKey(), percentage);
+            }
+
+            // Мощность по типам
+            Map<String, Double> powerByType = allObjects.stream()
+                    .collect(Collectors.groupingBy(
+                            EnergyObject::getType,
+                            Collectors.summingDouble(EnergyObject::getPower)
                     ));
 
             // Средний КПД по типам
-            Map<String, Double> avgEfficiencyByType = energyObjectService.getAllEnergyObjects()
-                    .stream()
+            Map<String, Double> avgEfficiencyByType = allObjects.stream()
                     .collect(Collectors.groupingBy(
                             EnergyObject::getType,
                             Collectors.averagingDouble(EnergyObject::getEfficiency)
                     ));
 
-            model.addAttribute("statistics", statistics);
+            // Общая и средняя мощность
+            double totalPower = allObjects.stream()
+                    .mapToDouble(EnergyObject::getPower)
+                    .sum();
+            double averagePower = Math.round((totalPower / totalObjects) * 100.0) / 100.0;
+
+            // Средний КПД
+            double averageEfficiency = allObjects.stream()
+                    .mapToDouble(EnergyObject::getEfficiency)
+                    .average()
+                    .orElse(0.0);
+
+            // Мощность активных объектов
+            double totalActivePower = allObjects.stream()
+                    .filter(EnergyObject::getActive)
+                    .mapToDouble(EnergyObject::getPower)
+                    .sum();
+
+            // Передаем данные в модель
             model.addAttribute("totalObjects", totalObjects);
             model.addAttribute("activeObjects", activeObjects);
+            model.addAttribute("inactiveObjects", inactiveObjects);
+            model.addAttribute("activePercentage", activePercentage);
+            model.addAttribute("inactivePercentage", inactivePercentage);
             model.addAttribute("typeCounts", typeCounts);
             model.addAttribute("typePercentages", typePercentages);
+            model.addAttribute("powerByType", powerByType);
             model.addAttribute("avgEfficiencyByType", avgEfficiencyByType);
+            model.addAttribute("totalPower", Math.round(totalPower * 100.0) / 100.0);
+            model.addAttribute("averagePower", averagePower);
+            model.addAttribute("averageEfficiency", Math.round(averageEfficiency * 10.0) / 10.0);
+            model.addAttribute("totalActivePower", Math.round(totalActivePower * 100.0) / 100.0);
 
             return "energy-objects/statistics";
+
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Ошибка при получении статистики: " + e.getMessage());
             return "redirect:/energy-objects";

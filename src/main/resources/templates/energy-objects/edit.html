@@ -1,138 +1,99 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout}">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
-    <title>Редактирование энергообъекта</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title layout:title-pattern="$CONTENT_TITLE - $LAYOUT_TITLE">Энергетическая компания</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
     <style>
-        .form-card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            transition: transform 0.3s;
+        .navbar-nav .nav-link.active {
+            font-weight: bold;
         }
-        .form-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+        .footer {
+            background-color: #f5f5f5;
+            padding: 1rem 0;
+            margin-top: 2rem;
         }
-        .form-header {
-            border-top-left-radius: 15px;
-            border-top-right-radius: 15px;
-            border-bottom: 2px solid rgba(255,255,255,0.1);
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875em;
         }
-        .form-section {
-            background-color: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
+        .success-message {
+            color: #198754;
+            font-size: 0.875em;
         }
-        .form-section h5 {
-            color: #495057;
-            border-bottom: 2px solid #dee2e6;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-        .required-field::after {
+        .form-label.required::after {
             content: " *";
             color: #dc3545;
         }
-        .form-control, .form-select {
-            border-radius: 8px;
-            border: 1px solid #ced4da;
-            padding: 10px 15px;
-            transition: all 0.3s;
+        .card {
+            border: 1px solid #dee2e6;
+            border-radius: 0.375rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
         }
-        .form-control:focus, .form-select:focus {
-            border-color: #86b7fe;
-            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-            transform: translateY(-2px);
-        }
-        .btn-action {
-            border-radius: 10px;
-            padding: 10px 25px;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        .btn-action:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        .status-badge {
-            border-radius: 20px;
-            padding: 5px 15px;
-            font-weight: 500;
-        }
-        .object-preview {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-radius: 12px;
-            padding: 25px;
-            border-left: 5px solid #0d6efd;
-        }
-        .object-preview h4 {
-            color: #0d6efd;
-            margin-bottom: 20px;
-        }
-        .info-row {
-            padding: 10px 0;
+        .card-header {
             border-bottom: 1px solid #dee2e6;
         }
-        .info-row:last-child {
-            border-bottom: none;
+        .btn-action {
+            min-width: 120px;
         }
-        .info-label {
-            font-weight: 600;
-            color: #495057;
+        .status-badge {
+            font-size: 0.875rem;
+            padding: 0.25rem 0.5rem;
         }
-        .info-value {
-            color: #212529;
+        .status-text {
+            margin-left: 10px;
+            font-weight: 500;
+        }
+        .status-switch-container {
+            display: flex;
+            align-items: center;
+            margin-top: 8px;
         }
     </style>
 </head>
 <body>
 <div layout:fragment="content">
-    <!-- Заголовок страницы -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="mb-1">
-                <i class="bi bi-pencil-square text-primary me-2"></i>
-                Редактирование энергообъекта
-            </h1>
-            <p class="text-muted mb-0">
-                <i class="bi bi-info-circle me-1"></i>
-                ID объекта:
-                <span class="badge bg-secondary" th:text="${energyObject?.id}">#</span>
-                | Последнее обновление:
-                <span th:text="${#temporals.format(#temporals.createNow(), 'dd.MM.yyyy HH:mm')}"></span>
-            </p>
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="mb-3">
+                    <i class="bi bi-pencil-square text-primary me-2"></i>
+                    Редактирование энергообъекта
+                </h1>
+                <p class="text-muted mb-0">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Последнее обновление:
+                    <span th:text="${#temporals.format(#temporals.createNow(), 'dd.MM.yyyy HH:mm')}"></span>
+                </p>
+            </div>
+            <div>
+                <a th:href="@{/energy-objects}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>Назад к списку
+                </a>
+            </div>
         </div>
-        <div>
-            <a th:href="@{/energy-objects}" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left me-1"></i>Назад к списку
-            </a>
-        </div>
-    </div>
 
-    <div class="row" th:if="${energyObject}">
-        <!-- Форма редактирования -->
-        <div class="col-lg-8">
-            <div class="card form-card mb-4">
-                <div class="card-header form-header bg-primary text-white">
-                    <h4 class="mb-0">
+        <div th:if="${energyObject}">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
                         <i class="bi bi-gear me-2"></i>
                         Основные параметры объекта
-                    </h4>
+                    </h5>
                 </div>
-                <form th:action="@{/energy-objects/update/{id}(id=${energyObject.id})}"
-                      th:object="${energyObject}"
-                      method="post"
-                      id="editForm">
+                <div class="card-body">
+                    <form th:action="@{/energy-objects/update/{id}(id=${energyObject.id})}"
+                          th:object="${energyObject}"
+                          method="post"
+                          id="editForm">
 
-                    <!-- Основная информация -->
-                    <div class="form-section">
-                        <h5><i class="bi bi-info-circle me-2"></i>Основная информация</h5>
+                        <!-- Основная информация -->
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="name" class="form-label required-field">
+                                <label for="name" class="form-label required">
                                     <i class="bi bi-building me-1"></i>
                                     Наименование объекта
                                 </label>
@@ -145,25 +106,25 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="type" class="form-label required-field">
+                                <label for="type" class="form-label required">
                                     <i class="bi bi-grid-3x3 me-1"></i>
                                     Тип объекта
                                 </label>
                                 <select class="form-select" id="type" th:field="*{type}" required>
                                     <option value="">Выберите тип...</option>
-                                    <option value="ЭЛЕКТРОСТАНЦИЯ">Электростанция</option>
-                                    <option value="ПОДСТАНЦИЯ">Подстанция</option>
-                                    <option value="ТРАНСФОРМАТОР">Трансформатор</option>
-                                    <option value="ГЕНЕРАТОР">Генератор</option>
-                                    <option value="СОЛНЕЧНАЯ_ПАНЕЛЬ">Солнечная панель</option>
-                                    <option value="ВЕТРОГЕНЕРАТОР">Ветрогенератор</option>
+                                    <option value="АЭС">АЭС</option>
+                                    <option value="ГЭС">ГЭС</option>
+                                    <option value="ТЭС">ТЭС</option>
+                                    <option value="ТЭЦ">ТЭЦ</option>
+                                    <option value="СЭС">СЭС</option>
+                                    <option value="ВЭС">ВЭС</option>
                                 </select>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="location" class="form-label required-field">
+                                <label for="location" class="form-label required">
                                     <i class="bi bi-geo-alt me-1"></i>
                                     Местоположение
                                 </label>
@@ -176,7 +137,7 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="power" class="form-label required-field">
+                                <label for="power" class="form-label required">
                                     <i class="bi bi-lightning-charge me-1"></i>
                                     Мощность (МВт)
                                 </label>
@@ -193,11 +154,8 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Технические параметры -->
-                    <div class="form-section">
-                        <h5><i class="bi bi-cpu me-2"></i>Технические параметры</h5>
+                        <!-- Технические параметры -->
                         <div class="row">
                             <div class="col-md-4 mb-3">
                                 <label for="commissioningYear" class="form-label">
@@ -232,28 +190,29 @@
                             </div>
 
                             <div class="col-md-4 mb-3">
-                                <label class="form-label">
+                                <label class="form-label d-block">
                                     <i class="bi bi-power me-1"></i>
                                     Статус
                                 </label>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input"
-                                           type="checkbox"
-                                           id="active"
-                                           th:field="*{active}"
-                                           role="switch">
-                                    <label class="form-check-label" for="active">
+                                <div class="status-switch-container">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input"
+                                               type="checkbox"
+                                               id="active"
+                                               th:field="*{active}"
+                                               role="switch"
+                                               onchange="updateStatusText()">
+                                        <label class="form-check-label" for="active"></label>
+                                    </div>
+                                    <span id="statusText" class="status-text">
                                         <span th:if="${energyObject.active}" class="badge bg-success">Активен</span>
                                         <span th:unless="${energyObject.active}" class="badge bg-warning">Неактивен</span>
-                                    </label>
+                                    </span>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Описание -->
-                    <div class="form-section">
-                        <h5><i class="bi bi-card-text me-2"></i>Дополнительная информация</h5>
+                        <!-- Описание -->
                         <div class="mb-3">
                             <label for="description" class="form-label">
                                 <i class="bi bi-card-text me-1"></i>
@@ -276,159 +235,73 @@
                                    id="lastMaintenanceDate"
                                    th:field="*{lastMaintenanceDate}">
                         </div>
-                    </div>
 
-                    <!-- Кнопки действий -->
-                    <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
-                        <div>
-                            <a th:href="@{/energy-objects}" class="btn btn-outline-secondary btn-action">
-                                <i class="bi bi-x-circle me-1"></i>Отмена
-                            </a>
+                        <!-- Кнопки действий -->
+                        <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                            <div>
+                                <a th:href="@{/energy-objects}" class="btn btn-outline-secondary btn-action">
+                                    <i class="bi bi-x-circle me-1"></i>Отмена
+                                </a>
+                            </div>
+                            <div class="d-flex gap-3">
+                                <button type="button" class="btn btn-outline-danger btn-action"
+                                        onclick="confirmDelete()">
+                                    <i class="bi bi-trash me-1"></i>Удалить
+                                </button>
+                                <button type="button" class="btn btn-outline-info btn-action"
+                                        onclick="resetForm()">
+                                    <i class="bi bi-arrow-clockwise me-1"></i>Сбросить
+                                </button>
+                                <button type="submit" class="btn btn-primary btn-action">
+                                    <i class="bi bi-check-circle me-1"></i>Сохранить
+                                </button>
+                            </div>
                         </div>
-                        <div class="d-flex gap-3">
-                            <button type="button" class="btn btn-outline-info btn-action"
-                                    onclick="resetForm()">
-                                <i class="bi bi-arrow-clockwise me-1"></i>Сбросить
-                            </button>
-                            <button type="submit" class="btn btn-primary btn-action">
-                                <i class="bi bi-check-circle me-1"></i>Сохранить изменения
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Панель предпросмотра -->
-        <div class="col-lg-4">
-            <div class="card form-card mb-4">
-                <div class="card-header form-header bg-info text-white">
-                    <h4 class="mb-0">
-                        <i class="bi bi-eye me-2"></i>
-                        Предпросмотр объекта
-                    </h4>
-                </div>
-                <div class="card-body object-preview">
-                    <h4 id="previewName" th:text="${energyObject.name}">Название объекта</h4>
-
-                    <div class="info-row">
-                        <div class="info-label">Тип:</div>
-                        <div class="info-value" id="previewType" th:text="${energyObject.type}">Тип</div>
-                    </div>
-
-                    <div class="info-row">
-                        <div class="info-label">Местоположение:</div>
-                        <div class="info-value" id="previewLocation" th:text="${energyObject.location}">Местоположение</div>
-                    </div>
-
-                    <div class="info-row">
-                        <div class="info-label">Мощность:</div>
-                        <div class="info-value">
-                            <span id="previewPower" th:text="${energyObject.power}">0</span> МВт
-                        </div>
-                    </div>
-
-                    <div class="info-row">
-                        <div class="info-label">Статус:</div>
-                        <div class="info-value">
-                            <span th:if="${energyObject.active}" class="badge bg-success">Активен</span>
-                            <span th:unless="${energyObject.active}" class="badge bg-warning">Неактивен</span>
-                        </div>
-                    </div>
-
-                    <div class="info-row" th:if="${energyObject.efficiency}">
-                        <div class="info-label">КПД:</div>
-                        <div class="info-value" id="previewEfficiency" th:text="${energyObject.efficiency}">0</div>%
-                    </div>
-
-                    <div class="info-row" th:if="${energyObject.commissioningYear}">
-                        <div class="info-label">Год ввода:</div>
-                        <div class="info-value" id="previewYear" th:text="${energyObject.commissioningYear}">2023</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Панель быстрых действий -->
-            <div class="card form-card">
-                <div class="card-header form-header bg-secondary text-white">
-                    <h5 class="mb-0">
-                        <i class="bi bi-lightning-charge me-2"></i>
-                        Быстрые действия
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-grid gap-2">
-                        <button type="button" class="btn btn-outline-danger"
-                                onclick="confirmDelete()">
-                            <i class="bi bi-trash me-1"></i>Удалить объект
-                        </button>
-                        <button type="button" class="btn btn-outline-warning">
-                            <i class="bi bi-file-earmark-pdf me-1"></i>Экспорт в PDF
-                        </button>
-                        <button type="button" class="btn btn-outline-info">
-                            <i class="bi bi-clipboard-data me-1"></i>Сгенерировать отчет
-                        </button>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Сообщение если объект не найден -->
-    <div th:unless="${energyObject}" class="text-center py-5">
-        <div class="mb-4">
-            <i class="bi bi-exclamation-triangle text-warning" style="font-size: 5rem;"></i>
+        <!-- Сообщение если объект не найден -->
+        <div th:unless="${energyObject}" class="text-center py-5">
+            <div class="mb-4">
+                <i class="bi bi-exclamation-triangle text-warning" style="font-size: 5rem;"></i>
+            </div>
+            <h3 class="text-warning mb-3">Объект не найден</h3>
+            <p class="text-muted mb-4">Запрашиваемый энергообъект не существует или был удален</p>
+            <a th:href="@{/energy-objects}" class="btn btn-primary">
+                <i class="bi bi-arrow-left me-1"></i>Вернуться к списку
+            </a>
         </div>
-        <h3 class="text-warning mb-3">Объект не найден</h3>
-        <p class="text-muted mb-4">Запрашиваемый энергообъект не существует или был удален</p>
-        <a th:href="@{/energy-objects}" class="btn btn-primary">
-            <i class="bi bi-arrow-left me-1"></i>Вернуться к списку
-        </a>
     </div>
 </div>
 
 <script layout:fragment="scripts">
-    // JavaScript для динамического обновления предпросмотра
-    document.addEventListener('DOMContentLoaded', function() {
-        // Обновление предпросмотра при изменении полей формы
-        // Обновление предпросмотра при изменении полей формы
-const formFields = ['name', 'type', 'location', 'power', 'efficiency', 'commissioningYear'];
+    // Функция для обновления текста статуса
+    function updateStatusText() {
+        const activeSwitch = document.getElementById('active');
+        const statusElement = document.getElementById('statusText');
 
-formFields.forEach(field => {
-    const input = document.getElementById(field);
-    const preview = document.getElementById('preview' + field.charAt(0).toUpperCase() + field.slice(1));
-
-    if (input && preview) {
-        input.addEventListener('input', function() {
-            if (field === 'power' || field === 'efficiency') {
-                preview.textContent = this.value ? parseFloat(this.value).toFixed(2) : '0';
-            } else {
-                preview.textContent = this.value || '-';
-            }
-        });
-    }
-});
-
-// Обновление статуса
-const activeSwitch = document.getElementById('active');
-if (activeSwitch) {
-    activeSwitch.addEventListener('change', function() {
-        const statusElement = document.querySelector('#previewStatus');
-        if (statusElement) {
-            if (this.checked) {
+        if (activeSwitch && statusElement) {
+            if (activeSwitch.checked) {
                 statusElement.innerHTML = '<span class="badge bg-success">Активен</span>';
             } else {
                 statusElement.innerHTML = '<span class="badge bg-warning">Неактивен</span>';
             }
         }
+    }
+
+    // Инициализация статуса при загрузке страницы
+    document.addEventListener('DOMContentLoaded', function() {
+        updateStatusText();
     });
-}
 
     // Функция сброса формы
     function resetForm() {
         if (confirm('Вы уверены, что хотите сбросить все изменения?')) {
             document.getElementById('editForm').reset();
-            // Можно добавить сброс предпросмотра к исходным значениям
+            // После сброса формы нужно обновить текст статуса
+            setTimeout(updateStatusText, 100);
         }
     }
 
